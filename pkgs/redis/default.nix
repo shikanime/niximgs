@@ -16,7 +16,7 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.redis.meta.description;
       "org.opencontainers.image.licenses" = pkgs.redis.meta.license.spdxId;
     };
-    User = "999:999"; # redis user
+    User = "1000:1000";
   };
   contents = [
     pkgs.dockerTools.caCertificates
