@@ -24,5 +24,4 @@ pkgs.dockerTools.buildLayeredImage {
   contents = [
     pkgs.dockerTools.caCertificates
   ];
-  broken = stdenv.hostPlatform.isAarch64;
 }

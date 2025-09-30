@@ -25,9 +25,9 @@ def parse_image [image: string]: nothing -> string {
 
 def format_arch [arch: string]: nothing -> string {
     match $arch {
-        "amd64" => "amd64"
-        "arm64" => "arm64v8"
-        "arm32" => "arm32v7"
+        "amd64" => "x86_64"
+        "arm64" => "aarch64"
+        "arm32" => "armv7l"
         _ => $arch
     }
 }
@@ -39,7 +39,7 @@ def format_image [config: record, platform_parts: record]: nothing -> string {
 
 def format_nix_flake [config: record, image_name: string, platform_parts: record]: nothing -> string {
     let formatted_arch = (format_arch $platform_parts.arch)
-    $"($config.build_context)#($image_name)-($platform_parts.os)-($formatted_arch)"
+    $"($config.build_context)#packages.($formatted_arch)-($platform_parts.os).($image_name)"
 }
 
 def get_platforms []: nothing -> string {
