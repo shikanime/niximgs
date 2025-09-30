@@ -14,6 +14,12 @@ pkgs.dockerTools.buildLayeredImage {
       "22000/udp" = { }; # Sync
       "21027/udp" = { }; # Discovery broadcasts
     };
+    Env = [
+      "STCONFDIR=/var/lib/syncthing/config"
+      "STDATADIR=/var/lib/syncthing/data"
+      "STNODEFAULTFOLDER=1"
+    ];
+    User = "1000:1000";
   };
   contents = [
     pkgs.dockerTools.caCertificates
