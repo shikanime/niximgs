@@ -77,6 +77,7 @@
             redis = pkgs.callPackage ./pkgs/redis { };
             sonarr = pkgs.callPackage ./pkgs/sonarr { };
             syncthing = pkgs.callPackage ./pkgs/syncthing { };
+            vaultwarden = pkgs.callPackage ./pkgs/vaultwarden { };
             whisparr = pkgs.callPackage ./pkgs/whisparr { };
           };
         };

@@ -1,0 +1,28 @@
+{ pkgs }:
+
+pkgs.dockerTools.buildLayeredImage {
+  name = "vaultwarden";
+  tag = pkgs.vaultwarden.version;
+
+  config = {
+    Entrypoint = [
+      "${pkgs.vaultwarden}/bin/vaultwarden"
+    ];
+    ExposedPorts = {
+      "80/tcp" = { }; # Vaultwarden default port
+    };
+    Labels = {
+      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
+      "org.opencontainers.image.description" = pkgs.vaultwarden.meta.description;
+      "org.opencontainers.image.licenses" = pkgs.vaultwarden.meta.license.spdxId;
+    };
+    User = "1000:1000";
+    Env = [
+      "ROCKET_ADDRESS=0.0.0.0"
+      "ROCKET_PORT=80"
+    ];
+  };
+  contents = [
+    pkgs.dockerTools.caCertificates
+  ];
+}
