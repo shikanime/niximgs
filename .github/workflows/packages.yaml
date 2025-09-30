@@ -25,5 +25,6 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@v13
       - run: |
           nix develop \
+            --accept-flake-config \
             --impure \
             -c skaffold build --platform linux/amd64,linux/arm64
