@@ -22,6 +22,9 @@ build:
     - image: ghcr.io/shikanime/niximgs/syncthing
       custom:
         buildCommand: ./build.nu
+    - image: ghcr.io/shikanime/niximgs/uv
+      custom:
+        buildCommand: ./build.nu
     - image: ghcr.io/shikanime/niximgs/vaultwarden
       custom:
         buildCommand: ./build.nu
