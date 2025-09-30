@@ -17,7 +17,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/setup-qemu-action@v3
       - uses: DeterminateSystems/nix-installer-action@v20
         with:
           extra-conf: |
