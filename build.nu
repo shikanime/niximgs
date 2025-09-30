@@ -65,15 +65,22 @@ def load_docker_image [nix_output: string]: nothing -> string {
     let image_name: string = if ($loaded_images | length) > 0 {
         $loaded_images | get image.0
     } else {
-        # If that fails, try to parse the "already exists" format
+        # If that fails, try to parse the "already exists" format with more flexible regex
         let existing_images = ($docker_load_result | parse "The image {image} already exists")
 
-        if ($existing_images | is-empty) {
-            print $"Error: Could not parse loaded image from Docker output: ($docker_load_result)"
-            exit 1
-        }
+        if ($existing_images | length) > 0 {
+            $existing_images | get image.0
+        } else {
+            # Try to extract image name from the beginning of "already exists" messages
+            let image_pattern = ($docker_load_result | parse --regex 'The image (?P<image>\S+:\S+) already exists')
 
-        $existing_images | get image.0
+            if ($image_pattern | length) > 0 {
+                $image_pattern | get image.0
+            } else {
+                print $"Error: Could not parse loaded image from Docker output: ($docker_load_result)"
+                exit 1
+            }
+        }
     }
 
     $image_name
