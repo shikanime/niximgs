@@ -21,4 +21,7 @@ jobs:
         with:
           github-token: ${{ secrets.NIX_GITHUB_TOKEN }}
       - uses: DeterminateSystems/magic-nix-cache-action@v13
-      - run: nix develop . --impure -c skaffold build
+      - run: |
+          nix develop \
+            --impure \
+            -c skaffold build --platforms linux/amd64,linux/arm64
