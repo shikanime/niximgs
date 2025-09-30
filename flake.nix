@@ -73,6 +73,7 @@
           packages = {
             jellyfin = pkgs.callPackage ./pkgs/jellyfin { };
             postgresql = pkgs.callPackage ./pkgs/postgresql { };
+            python = pkgs.callPackage ./pkgs/python { };
             radarr = pkgs.callPackage ./pkgs/radarr { };
             redis = pkgs.callPackage ./pkgs/redis { };
             sonarr = pkgs.callPackage ./pkgs/sonarr { };

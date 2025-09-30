@@ -10,6 +10,9 @@ build:
     - image: ghcr.io/shikanime/niximgs/postgresql
       custom:
         buildCommand: ./build.nu
+    - image: ghcr.io/shikanime/niximgs/python
+      custom:
+        buildCommand: ./build.nu
     - image: ghcr.io/shikanime/niximgs/radarr
       custom:
         buildCommand: ./build.nu
