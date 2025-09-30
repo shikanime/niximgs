@@ -1,7 +1,7 @@
 { pkgs }:
 
 pkgs.dockerTools.buildLayeredImage {
-  name = pkgs.syncthing.name;
+  name = "syncthing";
   tag = pkgs.syncthing.version;
 
   config = {

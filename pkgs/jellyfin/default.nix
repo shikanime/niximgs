@@ -1,7 +1,7 @@
 { pkgs }:
 
 pkgs.dockerTools.buildLayeredImage {
-  name = pkgs.jellyfin.name;
+  name = "jellyfin";
   tag = pkgs.jellyfin.version;
 
   config = {

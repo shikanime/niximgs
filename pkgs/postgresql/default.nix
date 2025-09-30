@@ -1,7 +1,7 @@
 { pkgs }:
 
 pkgs.dockerTools.buildLayeredImage {
-  name = pkgs.postgresql.name;
+  name = "postgresql";
   tag = pkgs.postgresql.version;
 
   config = {

@@ -4,8 +4,8 @@ def detect_host_arch []: nothing -> string {
     let arch: string = (uname | get machine)
     match $arch {
         "x86_64" | "amd64" => "amd64"
-        "aarch64" | "arm64" | "arm64e" => "arm64v8"
-        "armv7l" => "arm32v7"
+        "aarch64" | "arm64" | "arm64e" => "arm64"
+        "armv7l" => "arm32"
         _ => "amd64"  # Default fallback
     }
 }
