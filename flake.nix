@@ -38,7 +38,6 @@
             programs = {
               hclfmt.enable = true;
               nixfmt.enable = true;
-              nufmt.enable = true;
               prettier.enable = true;
               shfmt.enable = true;
               statix.enable = true;
