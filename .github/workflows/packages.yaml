@@ -1,0 +1,19 @@
+name: Packages
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - gh/*/*/base
+jobs:
+  packages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: DeterminateSystems/nix-installer-action@v19
+        with:
+          github-token: ${{ secrets.NIX_GITHUB_TOKEN }}
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+      - run: skaffold build
