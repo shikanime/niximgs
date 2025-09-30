@@ -1,0 +1,15 @@
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
+  name: shikanime
+build:
+  artifacts:
+    - image: ghcr.io/shikanime/niximgs/syncthing
+      custom:
+        buildCommand: ./build.nu
+    - image: ghcr.io/shikanime/niximgs/jellyfin
+      custom:
+        buildCommand: ./build.nu
+    - image: ghcr.io/shikanime/niximgs/postgresql
+      custom:
+        buildCommand: ./build.nu
