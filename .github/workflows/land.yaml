@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ steps.createGithubAppToken.outputs.token }}
-      - uses: DeterminateSystems/nix-installer-action@v19
+      - uses: DeterminateSystems/nix-installer-action@v20
         with:
           github-token: ${{ steps.createGithubAppToken.outputs.token }}
       - uses: DeterminateSystems/magic-nix-cache-action@v13

@@ -1,4 +1,5 @@
-#!/usr/bin/env nu
+#!/usr/bin/env nix
+#! nix develop --impure --command nu
 
 def detect_host_arch []: nothing -> string {
     let arch: string = (uname | get machine)
