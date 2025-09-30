@@ -23,6 +23,17 @@ def parse_image [image: string]: nothing -> string {
     $image | split row "/" | last | split row ":" | get 0
 }
 
+def format_image [config: record, platform: string]: nothing -> string {
+    let platform_parts = (parse_platform $platform)
+    let formatted_arch = match $platform_parts.arch {
+        "amd64" => "amd64"
+        "arm64" => "arm64v8"
+        "arm32" => "arm32v7"
+        _ => $platform_parts.arch
+    }
+    $"($config.image)-($formatted_arch)"
+}
+
 # Configuration functions
 def get_platforms []: nothing -> string {
     if ($env.PLATFORMS? | default "" | is-empty) {
@@ -118,7 +129,7 @@ def build_platform_image [config: record, platform: string]: nothing -> string {
     let flake_url = (format_nix_flake $config.build_context $image_name $platform_parts)
     let loaded_image = (build_and_load_flake $flake_url)
 
-    let image = $"($config.image)-($platform_parts.arch)"
+    let image = (format_image $config $platform)
     docker tag $loaded_image $image
 
     $image
