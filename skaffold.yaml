@@ -19,3 +19,9 @@ build:
     - image: ghcr.io/shikanime/niximgs/sonarr
       custom:
         buildCommand: ./build.nu
+    - image: ghcr.io/shikanime/niximgs/radarr
+      custom:
+        buildCommand: ./build.nu
+    - image: ghcr.io/shikanime/niximgs/whisparr
+      custom:
+        buildCommand: ./build.nu
