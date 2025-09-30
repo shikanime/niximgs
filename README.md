@@ -18,6 +18,7 @@ This repository provides Docker images for popular applications built with Nix, 
 - **redis** - In-memory data structure store
 - **sonarr** - TV series collection manager for Usenet and BitTorrent users
 - **syncthing** - Continuous file synchronization program
+- **uv** - Fast Python package installer and resolver
 - **vaultwarden** - Unofficial Bitwarden compatible server written in Rust
 - **whisparr** - Adult movie collection manager
 
