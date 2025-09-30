@@ -23,18 +23,25 @@ def parse_image [image: string]: nothing -> string {
     $image | split row "/" | last | split row ":" | get 0
 }
 
-def format_image [config: record, platform: string]: nothing -> string {
-    let platform_parts = (parse_platform $platform)
-    let formatted_arch = match $platform_parts.arch {
+def format_arch [arch: string]: nothing -> string {
+    match $arch {
         "amd64" => "amd64"
         "arm64" => "arm64v8"
         "arm32" => "arm32v7"
-        _ => $platform_parts.arch
+        _ => $arch
     }
+}
+
+def format_image [config: record, platform_parts: record]: nothing -> string {
+    let formatted_arch = (format_arch $platform_parts.arch)
     $"($config.image)-($formatted_arch)"
 }
 
-# Configuration functions
+def format_nix_flake [config: record, image_name: string, platform_parts: record]: nothing -> string {
+    let formatted_arch = (format_arch $platform_parts.arch)
+    $"($config.build_context)#($image_name)-($platform_parts.os)-($formatted_arch)"
+}
+
 def get_platforms []: nothing -> string {
     if ($env.PLATFORMS? | default "" | is-empty) {
         let detected: string = (detect_host_platform)
@@ -97,8 +104,12 @@ def load_docker_image [nix_output: string]: nothing -> string {
     $image_name
 }
 
-def format_nix_flake [build_context: string, image_name: string, platform_parts: record]: nothing -> string {
-    $"($build_context)#($image_name)-($platform_parts.os)-($platform_parts.arch)"
+def maybe_remove_existing_manifest [image: string]: nothing -> nothing {
+    try {
+        docker manifest rm $image
+    } catch {
+        # Ignore error if manifest doesn't exist
+    }
 }
 
 def build_and_load_flake [flake_url: string]: nothing -> string {
@@ -112,24 +123,16 @@ def build_and_load_flake [flake_url: string]: nothing -> string {
     load_docker_image $nix_output
 }
 
-def maybe_remove_existing_manifest [image: string]: nothing -> nothing {
-    try {
-        docker manifest rm $image
-    } catch {
-        # Ignore error if manifest doesn't exist
-    }
-}
-
 def build_platform_image [config: record, platform: string]: nothing -> string {
     let platform_parts = (parse_platform $platform)
     let image_name = (parse_image $config.image)
 
     print $"Building ($image_name) for ($platform)..."
 
-    let flake_url = (format_nix_flake $config.build_context $image_name $platform_parts)
+    let flake_url = (format_nix_flake $config $image_name $platform_parts)
     let loaded_image = (build_and_load_flake $flake_url)
 
-    let image = (format_image $config $platform)
+    let image = (format_image $config $platform_parts)
     docker tag $loaded_image $image
 
     $image
@@ -169,7 +172,6 @@ def create_and_push_manifest [config: record, manifest_images: list<string>]: no
     }
 }
 
-# Main execution
 let config = (get_config)
 let manifest_images = (build_and_push_all_platform_images $config)
 create_and_push_manifest $config $manifest_images
