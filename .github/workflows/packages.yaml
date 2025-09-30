@@ -24,4 +24,4 @@ jobs:
       - run: |
           nix develop \
             --impure \
-            -c skaffold build --platforms linux/amd64,linux/arm64
+            -c skaffold build --platform linux/amd64,linux/arm64
