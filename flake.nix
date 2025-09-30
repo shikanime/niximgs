@@ -66,6 +66,7 @@
             packages = [
               pkgs.gh
               pkgs.gitnr
+              pkgs.nushell
               pkgs.skaffold
             ];
           };
