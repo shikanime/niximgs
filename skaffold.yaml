@@ -16,3 +16,6 @@ build:
     - image: ghcr.io/shikanime/niximgs/redis
       custom:
         buildCommand: ./build.nu
+    - image: ghcr.io/shikanime/niximgs/sonarr
+      custom:
+        buildCommand: ./build.nu
