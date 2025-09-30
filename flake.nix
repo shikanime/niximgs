@@ -74,19 +74,19 @@
             ];
           };
           packages = {
-            syncthing-linux-arm64v8 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/syncthing { };
             jellyfin-linux-arm64v8 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/jellyfin { };
             postgresql-linux-arm64v8 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/postgresql { };
+            radarr-linux-arm64v8 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/radarr { };
             redis-linux-arm64v8 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/redis { };
             sonarr-linux-arm64v8 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/sonarr { };
-            radarr-linux-arm64v8 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/radarr { };
+            syncthing-linux-arm64v8 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/syncthing { };
             whisparr-linux-arm64v8 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/whisparr { };
-            syncthing-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/syncthing { };
             jellyfin-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/jellyfin { };
             postgresql-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/postgresql { };
+            radarr-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/radarr { };
             redis-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/redis { };
             sonarr-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/sonarr { };
-            radarr-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/radarr { };
+            syncthing-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/syncthing { };
             whisparr-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/whisparr { };
           };
         };

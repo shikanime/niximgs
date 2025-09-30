@@ -4,13 +4,13 @@ metadata:
   name: shikanime
 build:
   artifacts:
-    - image: ghcr.io/shikanime/niximgs/syncthing
-      custom:
-        buildCommand: ./build.nu
     - image: ghcr.io/shikanime/niximgs/jellyfin
       custom:
         buildCommand: ./build.nu
     - image: ghcr.io/shikanime/niximgs/postgresql
+      custom:
+        buildCommand: ./build.nu
+    - image: ghcr.io/shikanime/niximgs/radarr
       custom:
         buildCommand: ./build.nu
     - image: ghcr.io/shikanime/niximgs/redis
@@ -19,7 +19,7 @@ build:
     - image: ghcr.io/shikanime/niximgs/sonarr
       custom:
         buildCommand: ./build.nu
-    - image: ghcr.io/shikanime/niximgs/radarr
+    - image: ghcr.io/shikanime/niximgs/syncthing
       custom:
         buildCommand: ./build.nu
     - image: ghcr.io/shikanime/niximgs/whisparr
