@@ -77,9 +77,11 @@
             syncthing-linux-arm64 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/syncthing { };
             jellyfin-linux-arm64 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/jellyfin { };
             postgresql-linux-arm64 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/postgresql { };
+            redis-linux-arm64 = pkgs.pkgsCross.aarch64-multiplatform.callPackage ./pkgs/redis { };
             syncthing-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/syncthing { };
             jellyfin-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/jellyfin { };
             postgresql-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/postgresql { };
+            redis-linux-amd64 = pkgs.pkgsCross.gnu64.callPackage ./pkgs/redis { };
           };
         };
       systems = [
