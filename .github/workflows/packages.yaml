@@ -20,6 +20,8 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: DeterminateSystems/nix-installer-action@v20
         with:
+          extra-conf: |
+            extra-platforms = aarch64-linux
           github-token: ${{ secrets.NIX_GITHUB_TOKEN }}
       - uses: DeterminateSystems/magic-nix-cache-action@v13
       - run: |
