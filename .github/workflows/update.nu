@@ -47,14 +47,6 @@ def update_actions [workflow: string] {
             let latest_version = (get_latest_action_version $parsed.action)
             if ($latest_version != null and $latest_version != $parsed.current_version) {
                 update_action $workflow $parsed.action $parsed.current_version $latest_version
-                # Return the updated action@version information
-                {
-                    workflow: $workflow,
-                    action: $parsed.action,
-                    old_version: $parsed.current_version,
-                    new_version: $latest_version,
-                    updated_to: $"($parsed.action)@($latest_version)"
-                }
             }
         }
     }
