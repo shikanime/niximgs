@@ -21,4 +21,4 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: nix develop -c skaffold build
+      - run: nix develop . --impure -c skaffold build
