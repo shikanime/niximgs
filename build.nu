@@ -115,7 +115,7 @@ def maybe_remove_existing_manifest [image: string]: nothing -> nothing {
 
 def build_and_load_flake [flake_url: string]: nothing -> string {
     let nix_output: string = (try {
-        nix build $flake_url --print-out-paths | str trim
+        nix build --accept-flake-config --print-out-paths $flake_url | str trim
     } catch { |err|
         print $"Error building Nix flake: ($err.msg)"
         exit 1
