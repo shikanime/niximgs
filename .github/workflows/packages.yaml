@@ -16,7 +16,7 @@ jobs:
         with:
           github-token: ${{ secrets.NIX_GITHUB_TOKEN }}
       - uses: DeterminateSystems/magic-nix-cache-action@v13
-      -uses: docker/login-action@v3
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
