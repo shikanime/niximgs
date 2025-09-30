@@ -14,6 +14,11 @@ pkgs.dockerTools.buildLayeredImage {
     ExposedPorts = {
       "7878/tcp" = { }; # Web UI
     };
+    Labels = {
+      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
+      "org.opencontainers.image.description" = pkgs.radarr.meta.description;
+      "org.opencontainers.image.licenses" = pkgs.radarr.meta.license.spdxId;
+    };
     User = "1000:1000";
   };
   contents = [

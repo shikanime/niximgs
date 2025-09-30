@@ -20,6 +20,11 @@ pkgs.dockerTools.buildLayeredImage {
       "JELLYFIN_LOG_DIR=/var/log/jellyfin"
       "JELLYFIN_CACHE_DIR=/var/cache/jellyfin"
     ];
+    Labels = {
+      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
+      "org.opencontainers.image.description" = pkgs.jellyfin.meta.description;
+      "org.opencontainers.image.licenses" = pkgs.jellyfin.meta.license.spdxId;
+    };
     User = "1000:1000";
   };
   contents = [

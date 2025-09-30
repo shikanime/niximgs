@@ -11,6 +11,11 @@ pkgs.dockerTools.buildLayeredImage {
     ExposedPorts = {
       "6379/tcp" = { }; # Redis default port
     };
+    Labels = {
+      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
+      "org.opencontainers.image.description" = pkgs.redis.meta.description;
+      "org.opencontainers.image.licenses" = pkgs.redis.meta.license.spdxId;
+    };
     User = "999:999"; # redis user
   };
   contents = [
