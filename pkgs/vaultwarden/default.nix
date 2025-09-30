@@ -16,7 +16,6 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.vaultwarden.meta.description;
       "org.opencontainers.image.licenses" = pkgs.vaultwarden.meta.license.spdxId;
     };
-    User = "1000:1000";
     Env = [
       "ROCKET_ADDRESS=0.0.0.0"
       "ROCKET_PORT=80"

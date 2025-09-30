@@ -25,7 +25,6 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.jellyfin.meta.description;
       "org.opencontainers.image.licenses" = pkgs.jellyfin.meta.license.spdxId;
     };
-    User = "1000:1000";
   };
   contents = [
     pkgs.dockerTools.caCertificates

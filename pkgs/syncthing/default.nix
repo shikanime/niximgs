@@ -24,7 +24,6 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.syncthing.meta.description;
       "org.opencontainers.image.licenses" = pkgs.syncthing.meta.license.spdxId;
     };
-    User = "1000:1000";
   };
   contents = [
     pkgs.dockerTools.caCertificates

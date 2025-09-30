@@ -19,7 +19,6 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.whisparr.meta.description;
       "org.opencontainers.image.licenses" = pkgs.whisparr.meta.license.spdxId;
     };
-    User = "1000:1000";
   };
   contents = [
     pkgs.dockerTools.caCertificates
