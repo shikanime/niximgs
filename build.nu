@@ -144,7 +144,12 @@ def build_and_push_platform_image [config: record, platform: string]: nothing ->
 
     if $config.push_image {
         print $"Pushing ($image)..."
-        docker push $image
+        try {
+            docker push $image
+        } catch { |err|
+            print $"Error pushing image ($image): ($err.msg)"
+            exit 1
+        }
     }
 
     $image
