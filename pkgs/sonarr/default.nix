@@ -5,7 +5,7 @@ pkgs.dockerTools.buildLayeredImage {
   tag = pkgs.sonarr.version;
 
   config = {
-    Cmd = [
+    Entrypoint = [
       "${pkgs.sonarr}/bin/Sonarr"
       "-nobrowser"
       "-data"

@@ -5,7 +5,7 @@ pkgs.dockerTools.buildLayeredImage {
   tag = pkgs.syncthing.version;
 
   config = {
-    Cmd = [
+    Entrypoint = [
       "${pkgs.syncthing}/bin/syncthing"
     ];
     ExposedPorts = {

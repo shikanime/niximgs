@@ -5,7 +5,7 @@ pkgs.dockerTools.buildLayeredImage {
   tag = pkgs.postgresql.version;
 
   config = {
-    Cmd = [
+    Entrypoint = [
       "${pkgs.postgresql}/bin/postgres"
     ];
     ExposedPorts = {

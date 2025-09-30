@@ -5,7 +5,7 @@ pkgs.dockerTools.buildLayeredImage {
   tag = pkgs.jellyfin.version;
 
   config = {
-    Cmd = [
+    Entrypoint = [
       "${pkgs.jellyfin}/bin/jellyfin"
     ];
     ExposedPorts = {

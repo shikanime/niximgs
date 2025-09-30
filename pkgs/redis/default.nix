@@ -5,7 +5,7 @@ pkgs.dockerTools.buildLayeredImage {
   tag = pkgs.redis.version;
 
   config = {
-    Cmd = [
+    Entrypoint = [
       "${pkgs.redis}/bin/redis-server"
     ];
     ExposedPorts = {
