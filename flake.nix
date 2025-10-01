@@ -72,7 +72,7 @@
           };
           packages = {
             jellyfin = pkgs.callPackage ./pkgs/jellyfin { };
-            mlflow-server = pkgs.callPackage ./pkgs/mlflow-server { };
+            mlflow = pkgs.callPackage ./pkgs/mlflow { };
             postgresql = pkgs.callPackage ./pkgs/postgresql { };
             python = pkgs.callPackage ./pkgs/python { };
             radarr = pkgs.callPackage ./pkgs/radarr { };
