@@ -7,6 +7,9 @@ build:
     - image: ghcr.io/shikanime/niximgs/jellyfin
       custom:
         buildCommand: ./build.nu
+    - image: ghcr.io/shikanime/niximgs/mlflow
+      custom:
+        buildCommand: ./build.nu
     - image: ghcr.io/shikanime/niximgs/postgresql
       custom:
         buildCommand: ./build.nu
