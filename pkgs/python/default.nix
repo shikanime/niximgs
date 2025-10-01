@@ -18,8 +18,5 @@ pkgs.dockerTools.buildLayeredImage {
     pkgs.dockerTools.caCertificates
     pkgs.dockerTools.usrBinEnv
     pkgs.dockerTools.binSh
-    pkgs.coreutils
-    pkgs.bash
-    pkgs.python3
   ];
 }
