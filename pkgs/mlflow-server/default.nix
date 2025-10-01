@@ -1,7 +1,7 @@
 { pkgs }:
 
 pkgs.dockerTools.buildLayeredImage {
-  name = "mlflow-server";
+  name = "mlflow";
   tag = pkgs.mlflow-server.version;
 
   config = {
