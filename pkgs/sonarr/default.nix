@@ -7,6 +7,8 @@ pkgs.dockerTools.buildLayeredImage {
   config = {
     Entrypoint = [
       "${pkgs.sonarr}/bin/Sonarr"
+    ];
+    Cmd = [
       "-nobrowser"
       "-data"
       "/var/lib/sonarr"
