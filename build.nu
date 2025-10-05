@@ -133,8 +133,8 @@ def build_all_platform_images [ctx: record]: nothing -> list<string> {
         }
 }
 
-def push_all_images [ctx: record, manifest_images: list<string>]: nothing -> list<nothing> {
-    $manifest_images
+def push_all_images [ctx: record, images: list<string>]: nothing -> list<nothing> {
+    $images
     | par-each { |image| $image | push_image $ctx }
 }
 
@@ -146,11 +146,11 @@ def remove_manifest [ctx: record]: nothing -> nothing {
     }
 }
 
-def create_manifest [ctx: record, manifest_images: list<string>]: nothing -> nothing {
-    if ($manifest_images | length) > 0 {
+def create_manifest [ctx: record, images: list<string>]: nothing -> nothing {
+    if ($images | length) > 0 {
         print $"Creating manifest for ($ctx.image)..."
         remove_manifest $ctx
-        docker manifest create $ctx.image ...$manifest_images
+        docker manifest create $ctx.image ...$images
     }
 }
 
@@ -161,9 +161,9 @@ def push_manifest [ctx: record]: nothing -> nothing {
 }
 
 def build_multiplatform_image [ctx: record]: nothing -> nothing {
-    let manifest_images = build_all_platform_images $ctx
-    push_all_images $ctx $manifest_images
-    create_manifest $ctx $manifest_images
+    let images = build_all_platform_images $ctx
+    push_all_images $ctx $images
+    create_manifest $ctx $images
     push_manifest $ctx
 }
 
