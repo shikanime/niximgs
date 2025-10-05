@@ -104,7 +104,7 @@ def build_flake []: string -> string {
     nix build --accept-flake-ctx --print-out-paths $in | str trim
 }
 
-def build_image [ctx: record]: string -> string {
+def build_platform_image [ctx: record]: string -> string {
     let platform_parts = $in | parse_platform
     let image_name = $ctx.image | parse_image
 
@@ -129,11 +129,11 @@ def build_all_platform_images [ctx: record]: nothing -> list<string> {
     $ctx.platforms
         | split row ","
         | par-each { |platform|
-            $platform | build_image $ctx
+            $platform | build_platform_image $ctx
         }
 }
 
-def push_all_platform_images [ctx: record, manifest_images: list<string>]: nothing -> list<nothing> {
+def push_all_images [ctx: record, manifest_images: list<string>]: nothing -> list<nothing> {
     $manifest_images
     | par-each { |image| $image | push_image $ctx }
 }
@@ -162,7 +162,7 @@ def push_manifest [ctx: record]: nothing -> nothing {
 
 def build_multiplatform_image [ctx: record]: nothing -> nothing {
     let manifest_images = build_all_platform_images $ctx
-    push_all_platform_images $ctx $manifest_images
+    push_all_images $ctx $manifest_images
     create_manifest $ctx $manifest_images
     push_manifest $ctx
 }
