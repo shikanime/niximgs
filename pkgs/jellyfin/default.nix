@@ -36,11 +36,6 @@ pkgs.dockerTools.buildLayeredImage {
     pkgs.dockerTools.caCertificates
   ];
   extraCommands = ''
-    mkdir -m 0777 /tmp
-    mkdir -p \
-      ${dataDir} \
-      ${configDir} \
-      ${logDir} \
-      ${cacheDir}
+    mkdir -p /tmp ${dataDir} ${configDir} ${logDir} ${cacheDir}
   '';
 }
