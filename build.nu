@@ -33,14 +33,14 @@ def format_arch []: string -> string {
     }
 }
 
-def format_image [ctx: record, platform_parts: record]: nothing -> string {
-    let formatted_arch = $platform_parts.arch | format_arch
+def format_image [ctx: record, platform: record]: nothing -> string {
+    let formatted_arch = $platform.arch | format_arch
     $"($ctx.image)-($formatted_arch)"
 }
 
-def format_nix_flake [ctx: record, image_name: string, platform_parts: record]: nothing -> string {
-    let formatted_arch = $platform_parts.arch | format_arch
-    $"($ctx.build_context)#packages.($formatted_arch)-($platform_parts.os).($image_name)"
+def format_nix_flake [ctx: record, image_name: string, platform: record]: nothing -> string {
+    let formatted_arch = $platform.arch | format_arch
+    $"($ctx.build_context)#packages.($formatted_arch)-($platform.os).($image_name)"
 }
 
 def get_platforms []: nothing -> string {
@@ -105,15 +105,15 @@ def build_flake []: string -> string {
 }
 
 def build_platform_image [ctx: record]: string -> string {
-    let platform_parts = $in | parse_platform
+    let platform = $in | parse_platform
     let image_name = $ctx.image | parse_image
 
     print $"Building ($image_name) for ($in)..."
 
-    let flake_url = format_nix_flake $ctx $image_name $platform_parts
+    let flake_url = format_nix_flake $ctx $image_name $platform
     let loaded_image = $flake_url | build_flake | load_docker_image
 
-    let image = format_image $ctx $platform_parts
+    let image = format_image $ctx $platform
     docker tag $loaded_image $image
 
     $image
