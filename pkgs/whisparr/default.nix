@@ -1,7 +1,7 @@
 { pkgs }:
 
 let
-  dataDir = "/var/lib/whisparr/.config/Whisparr";
+  dataDir = "/var/lib/whisparr";
 in
 pkgs.dockerTools.buildLayeredImage {
   name = "whisparr";

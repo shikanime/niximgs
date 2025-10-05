@@ -1,7 +1,7 @@
 { pkgs }:
 
 let
-  dataDir = "/var/lib/sonarr/.config/NzbDrone";
+  dataDir = "/var/lib/sonarr";
 in
 pkgs.dockerTools.buildLayeredImage {
   name = "sonarr";

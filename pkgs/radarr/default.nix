@@ -1,7 +1,7 @@
 { pkgs }:
 
 let
-  dataDir = "/var/lib/radarr/.config/Radarr";
+  dataDir = "/var/lib/radarr";
 in
 pkgs.dockerTools.buildLayeredImage {
   name = "radarr";
