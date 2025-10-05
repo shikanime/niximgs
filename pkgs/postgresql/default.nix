@@ -16,7 +16,7 @@ pkgs.dockerTools.buildLayeredImage {
       "POSTGRES_DB=postgres"
       "POSTGRES_USER=postgres"
       "POSTGRES_PASSWORD=postgres"
-      "PGDATA=/var/lib/postgresql/data"
+      "PGDATA=/var/lib/postgresql/data/${pkgs.postgresql.psqlSchema}"
     ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
@@ -26,7 +26,7 @@ pkgs.dockerTools.buildLayeredImage {
     User = "1000:1000";
   };
   fakeRootCommands = ''
-    mkdir -p ./var/lib/postgresql/data
-    chown 1000:1000 ./var/lib/postgresql/data
+    mkdir -p ./var/lib/postgresql/data/${pkgs.postgresql.psqlSchema}
+    chown 1000:1000 ./var/lib/postgresql/data/${pkgs.postgresql.psqlSchema}
   '';
 }
