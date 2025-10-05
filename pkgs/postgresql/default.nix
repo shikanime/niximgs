@@ -23,6 +23,7 @@ pkgs.dockerTools.buildLayeredImage {
     User = "1000:1000";
   };
   contents = [
+    pkgs.dockerTools.fakeNss
     pkgs.postgresql
   ];
   fakeRootCommands = ''
