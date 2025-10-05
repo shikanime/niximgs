@@ -6,7 +6,6 @@ on:
   pull_request:
     branches:
       - main
-      - gh/*/*/base
 jobs:
   packages:
     runs-on: ubuntu-latest
@@ -33,4 +32,20 @@ jobs:
           nix develop \
             --accept-flake-config \
             --impure \
-            -c skaffold build --platform linux/amd64,linux/arm64
+            -c skaffold build \
+              --platform linux/amd64,linux/arm64 \
+              --build-image ghcr.io/shikanime/niximgs/${{ matrix.image }}
+    strategy:
+      matrix:
+        image:
+          - jellyfin
+          - mlflow
+          - postgresql
+          - python
+          - radarr
+          - redis
+          - sonarr
+          - syncthing
+          - uv
+          - vaultwarden
+          - whisparr
