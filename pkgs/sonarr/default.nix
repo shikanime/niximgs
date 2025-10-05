@@ -1,11 +1,10 @@
-{ pkgs }:
+{ base, pkgs }:
 
-let
-  dataDir = "/var/lib/sonarr";
-in
+
 pkgs.dockerTools.buildLayeredImage {
   name = "sonarr";
   tag = pkgs.sonarr.version;
+  fromImage = base;
 
   config = {
     Entrypoint = [
@@ -14,21 +13,17 @@ pkgs.dockerTools.buildLayeredImage {
     Cmd = [
       "-nobrowser"
       "-data"
-      dataDir
+      "/var/lib/sonarr"
     ];
     ExposedPorts = {
       "8989/tcp" = { }; # Web UI
     };
     Labels = {
-      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.sonarr.meta.description;
       "org.opencontainers.image.licenses" = pkgs.sonarr.meta.license.spdxId;
     };
   };
-  contents = [
-    pkgs.dockerTools.caCertificates
-  ];
   extraCommands = ''
-    mkdir -p ${dataDir}
+    mkdir -p var/lib/sonarr
   '';
 }

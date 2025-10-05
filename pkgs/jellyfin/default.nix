@@ -1,14 +1,9 @@
-{ pkgs }:
+{ base, pkgs }:
 
-let
-  dataDir = "/var/lib/jellyfin";
-  configDir = "/var/lib/jellyfin/config";
-  cacheDir = "/var/cache/jellyfin";
-  logDir = "/var/lib/jellyfin/log";
-in
 pkgs.dockerTools.buildLayeredImage {
   name = "jellyfin";
   tag = pkgs.jellyfin.version;
+  fromImage = base;
 
   config = {
     Entrypoint = [
@@ -21,21 +16,17 @@ pkgs.dockerTools.buildLayeredImage {
       "7359/udp" = { }; # Auto-discovery
     };
     Env = [
-      "JELLYFIN_DATA_DIR=${dataDir}"
-      "JELLYFIN_CONFIG_DIR=${configDir}"
-      "JELLYFIN_LOG_DIR=${logDir}"
-      "JELLYFIN_CACHE_DIR=${cacheDir}"
+      "JELLYFIN_DATA_DIR=/var/lib/jellyfin"
+      "JELLYFIN_CONFIG_DIR=/var/lib/jellyfin/config"
+      "JELLYFIN_LOG_DIR=/var/lib/jellyfin/log"
+      "JELLYFIN_CACHE_DIR=/var/cache/jellyfin"
     ];
     Labels = {
-      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.jellyfin.meta.description;
       "org.opencontainers.image.licenses" = pkgs.jellyfin.meta.license.spdxId;
     };
   };
-  contents = [
-    pkgs.dockerTools.caCertificates
-  ];
   extraCommands = ''
-    mkdir -p /tmp ${dataDir} ${configDir} ${logDir} ${cacheDir}
+    mkdir -p tmp var/lib/jellyfin var/lib/jellyfin/config var/lib/jellyfin/log var/cache/jellyfin
   '';
 }
