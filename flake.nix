@@ -74,12 +74,10 @@
             jellyfin = pkgs.callPackage ./pkgs/jellyfin { };
             mlflow = pkgs.callPackage ./pkgs/mlflow { };
             postgresql = pkgs.callPackage ./pkgs/postgresql { };
-            python = pkgs.callPackage ./pkgs/python { };
             radarr = pkgs.callPackage ./pkgs/radarr { };
             redis = pkgs.callPackage ./pkgs/redis { };
             sonarr = pkgs.callPackage ./pkgs/sonarr { };
             syncthing = pkgs.callPackage ./pkgs/syncthing { };
-            uv = pkgs.callPackage ./pkgs/uv { };
             vaultwarden = pkgs.callPackage ./pkgs/vaultwarden { };
             whisparr = pkgs.callPackage ./pkgs/whisparr { };
           };
