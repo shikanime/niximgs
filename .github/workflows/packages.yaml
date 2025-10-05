@@ -50,6 +50,6 @@ jobs:
           - uv
           - vaultwarden
           - whisparr
-      platform:
-        - linux/amd64
-        - linux/arm64
+        platform:
+          - linux/amd64
+          - linux/arm64
