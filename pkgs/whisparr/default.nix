@@ -1,5 +1,8 @@
 { pkgs }:
 
+let
+  dataDir = "/var/lib/whisparr/.config/Whisparr";
+in
 pkgs.dockerTools.buildLayeredImage {
   name = "whisparr";
   tag = pkgs.whisparr.version;
@@ -9,7 +12,7 @@ pkgs.dockerTools.buildLayeredImage {
       "${pkgs.whisparr}/bin/Whisparr"
       "-nobrowser"
       "-data"
-      "/var/lib/whisparr"
+      dataDir
     ];
     ExposedPorts = {
       "6969/tcp" = { }; # Web UI
@@ -23,4 +26,7 @@ pkgs.dockerTools.buildLayeredImage {
   contents = [
     pkgs.dockerTools.caCertificates
   ];
+  extraCommands = ''
+    mkdir -p ${dataDir}
+  '';
 }

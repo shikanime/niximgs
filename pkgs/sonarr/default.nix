@@ -1,5 +1,8 @@
 { pkgs }:
 
+let
+  dataDir = "/var/lib/sonarr/.config/NzbDrone";
+in
 pkgs.dockerTools.buildLayeredImage {
   name = "sonarr";
   tag = pkgs.sonarr.version;
@@ -11,7 +14,7 @@ pkgs.dockerTools.buildLayeredImage {
     Cmd = [
       "-nobrowser"
       "-data"
-      "/var/lib/sonarr"
+      dataDir
     ];
     ExposedPorts = {
       "8989/tcp" = { }; # Web UI
@@ -25,4 +28,7 @@ pkgs.dockerTools.buildLayeredImage {
   contents = [
     pkgs.dockerTools.caCertificates
   ];
+  extraCommands = ''
+    mkdir -p ${dataDir}
+  '';
 }
