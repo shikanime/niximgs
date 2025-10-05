@@ -15,12 +15,10 @@ This repository provides Docker images for popular applications built with Nix, 
 - **jellyfin** - Media server for managing and streaming media
 - **mlflow** - Machine learning lifecycle management platform
 - **postgresql** - Advanced open-source relational database
-- **python** - Python programming language runtime with pip and essential packages
 - **radarr** - Movie collection manager for Usenet and BitTorrent users
 - **redis** - In-memory data structure store
 - **sonarr** - TV series collection manager for Usenet and BitTorrent users
 - **syncthing** - Continuous file synchronization program
-- **uv** - Fast Python package installer and resolver
 - **vaultwarden** - Unofficial Bitwarden compatible server written in Rust
 - **whisparr** - Adult movie collection manager
 
