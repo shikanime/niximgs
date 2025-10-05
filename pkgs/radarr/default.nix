@@ -1,6 +1,6 @@
 { base, pkgs }:
 
-pkgs.dockerTools.streamLayeredImage {
+pkgs.dockerTools.buildLayeredImage {
   name = "radarr";
   tag = pkgs.radarr.version;
   fromImage = base;

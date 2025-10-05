@@ -1,6 +1,6 @@
 { pkgs }:
 
-pkgs.dockerTools.streamLayeredImage {
+pkgs.dockerTools.buildLayeredImage {
   name = "base";
 
   config = {
