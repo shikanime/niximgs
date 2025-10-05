@@ -57,7 +57,7 @@ def get_skaffold_images []: nothing -> list<string> {
 }
 
 def update_workflow_packages []: record -> record {
-    let images = (get_skaffold_images)
+    let images = get_skaffold_images
     print $"Images: ($images | str join ', ')"
     $in | upsert jobs.packages.strategy.matrix.image $images
 }
