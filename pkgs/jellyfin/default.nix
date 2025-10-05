@@ -30,7 +30,7 @@ pkgs.dockerTools.buildLayeredImage {
     pkgs.dockerTools.fakeNss
   ];
   fakeRootCommands = ''
-    mkdir tmp
-    chmod 777 tmp
+    mkdir -p ./tmp
+    chmod 777 ./tmp
   '';
 }
