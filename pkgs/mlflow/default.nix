@@ -17,12 +17,6 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.mlflow-server.meta.description;
       "org.opencontainers.image.licenses" = pkgs.mlflow-server.meta.license.spdxId;
     };
-    User = "mlflow";
+    User = "1000:1000";
   };
-  fakeRootCommands = ''
-    #!${pkgs.runtimeShell}
-    ${pkgs.dockerTools.shadowSetup}
-    groupadd -r mlflow
-    useradd -r -g mlflow mlflow
-  '';
 }
