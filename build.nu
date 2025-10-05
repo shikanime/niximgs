@@ -74,7 +74,7 @@ def load_docker_image []: string -> string {
     let docker_load_result: string = docker load -i $in | str trim
 
     # Try to parse "Loaded image:" format first
-    let loaded_images = ($docker_load_result | parse "Loaded image: {image}")
+    let loaded_images = $docker_load_result | parse "Loaded image: {image}"
 
     let image_name: string = if ($loaded_images | length) > 0 {
         $loaded_images | get image.0
@@ -142,8 +142,6 @@ def build_and_push_all_platform_images []: record -> list<string> {
 def create_and_push_manifest [manifest_images: list<string>]: record -> nothing {
     if ($manifest_images | length) > 0 {
         print $"Creating manifest for ($in.image)..."
-
-        docker manifest rm $in.image
 
         docker manifest create $in.image ...$manifest_images
 
