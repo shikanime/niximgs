@@ -167,5 +167,4 @@ def build_multiplatform_image [ctx: record]: nothing -> nothing {
     push_manifest $ctx
 }
 
-let ctx = get_skaffold_context
-build_multiplatform_image $ctx
+build_multiplatform_image (get_skaffold_context)
