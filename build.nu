@@ -71,12 +71,7 @@ def get_skaffold_context []: nothing -> record {
 }
 
 def load_docker_image []: string -> string {
-    let docker_load_result: string = (try {
-        docker load -i $in | str trim
-    } catch { |err|
-        print $"Error loading Docker image: ($err.msg)"
-        exit 1
-    })
+    let docker_load_result: string = docker load -i $in | str trim
 
     # Try to parse "Loaded image:" format first
     let loaded_images = $docker_load_result | parse "Loaded image: {image}"
@@ -105,24 +100,18 @@ def load_docker_image []: string -> string {
     $image_name
 }
 
-def build_and_load_flake []: string -> string {
-    try {
-        nix build --accept-flake-ctx --print-out-paths $in | str trim
-    } catch { |err|
-        print $"Error building Nix flake: ($err.msg)"
-        exit 1
-    }
-    | load_docker_image
+def build_flake []: string -> string {
+    nix build --accept-flake-ctx --print-out-paths $in | str trim
 }
 
-def build_platform_image [ctx: record, platform: string]: nothing -> string {
-    let platform_parts = $platform | parse_platform
+def build_platform_image [ctx: record]: string -> string {
+    let platform_parts = $in | parse_platform
     let image_name = $ctx.image | parse_image
 
-    print $"Building ($image_name) for ($platform)..."
+    print $"Building ($image_name) for ($in)..."
 
     let flake_url = format_nix_flake $ctx $image_name $platform_parts
-    let loaded_image = $flake_url | build_and_load_flake
+    let loaded_image = $flake_url | build_flake | load_docker_image
 
     let image = format_image $ctx $platform_parts
     docker tag $loaded_image $image
@@ -130,50 +119,53 @@ def build_platform_image [ctx: record, platform: string]: nothing -> string {
     $image
 }
 
-def build_and_push_platform_image [ctx: record, platform: string]: nothing -> string {
-    let image = build_platform_image $ctx $platform
-
+def push_image [ctx: record]: string -> nothing {
     if $ctx.push_image {
-        print $"Pushing ($image)..."
-        try {
-            docker push $image
-        } catch { |err|
-            print $"Error pushing image ($image): ($err.msg)"
-            exit 1
-        }
+        docker push $in
     }
-
-    $image
 }
 
-def build_and_push_all_platform_images [ctx: record]: nothing -> list<string> {
+def build_all_platform_images [ctx: record]: nothing -> list<string> {
     $ctx.platforms
         | split row ","
         | par-each { |platform|
-            build_and_push_platform_image $ctx $platform
+            $platform | build_platform_image $ctx
         }
 }
 
-def create_and_push_manifest [ctx: record, manifest_images: list<string>]: nothing -> nothing {
-    if ($manifest_images | length) > 0 {
-        print $"Creating manifest for ($ctx.image)..."
+def push_all_platform_images [ctx: record, manifest_images: list<string>]: nothing -> list<nothing> {
+    $manifest_images
+    | par-each { |image| $image | push_image $ctx }
+}
 
-        try {
-            docker manifest rm $ctx.image
-        } catch { |err|
-            print $"Manifest removal failed for ($ctx.image): ($err.msg)"
-        }
-
-        docker manifest create $ctx.image ...$manifest_images
-
-        if $ctx.push_image {
-            print $"Pushing manifest for ($ctx.image)..."
-            docker manifest push $ctx.image
-        }
+def remove_manifest [ctx: record]: nothing -> nothing {
+    try {
+        docker manifest rm $ctx.image
+    } catch { |err|
+        print $"Manifest removal failed for ($ctx.image): ($err.msg)"
     }
 }
 
+def create_manifest [ctx: record, manifest_images: list<string>]: nothing -> nothing {
+    if ($manifest_images | length) > 0 {
+        print $"Creating manifest for ($ctx.image)..."
+        remove_manifest $ctx
+        docker manifest create $ctx.image ...$manifest_images
+    }
+}
+
+def push_manifest [ctx: record]: nothing -> nothing {
+    if $ctx.push_image {
+        docker manifest push $ctx.image
+    }
+}
+
+def build_multiplatform_image [ctx: record]: nothing -> nothing {
+    let manifest_images = build_all_platform_images $ctx
+    push_all_platform_images $ctx $manifest_images
+    create_manifest $ctx $manifest_images
+    push_manifest $ctx
+}
+
 let ctx = get_skaffold_context
-let manifest_images = build_and_push_all_platform_images $ctx
-create_and_push_manifest $ctx $manifest_images
-print "Build completed successfully"
+build_multiplatform_image $ctx
