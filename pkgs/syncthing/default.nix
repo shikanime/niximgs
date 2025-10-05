@@ -1,5 +1,9 @@
 { pkgs }:
 
+let
+  configDir = "/var/lib/syncthing/config";
+  dataDir = "/var/lib/syncthing/data";
+in
 pkgs.dockerTools.buildLayeredImage {
   name = "syncthing";
   tag = pkgs.syncthing.version;
@@ -15,8 +19,8 @@ pkgs.dockerTools.buildLayeredImage {
       "21027/udp" = { }; # Discovery broadcasts
     };
     Env = [
-      "STCONFDIR=/var/lib/syncthing/config"
-      "STDATADIR=/var/lib/syncthing/data"
+      "STCONFDIR=${configDir}"
+      "STDATADIR=${dataDir}"
       "STNODEFAULTFOLDER=1"
     ];
     Labels = {
@@ -28,4 +32,7 @@ pkgs.dockerTools.buildLayeredImage {
   contents = [
     pkgs.dockerTools.caCertificates
   ];
+  extraCommands = ''
+    mkdir -p ${configDir} ${dataDir}
+  '';
 }

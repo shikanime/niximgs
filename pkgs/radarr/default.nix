@@ -1,5 +1,8 @@
 { pkgs }:
 
+let
+  dataDir = "/var/lib/radarr";
+in
 pkgs.dockerTools.buildLayeredImage {
   name = "radarr";
   tag = pkgs.radarr.version;
@@ -9,7 +12,7 @@ pkgs.dockerTools.buildLayeredImage {
       "${pkgs.radarr}/bin/Radarr"
       "-nobrowser"
       "-data"
-      "/var/lib/radarr"
+      dataDir
     ];
     ExposedPorts = {
       "7878/tcp" = { }; # Web UI
@@ -23,4 +26,7 @@ pkgs.dockerTools.buildLayeredImage {
   contents = [
     pkgs.dockerTools.caCertificates
   ];
+  extraCommands = ''
+    mkdir -p ${dataDir}
+  '';
 }
