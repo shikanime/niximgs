@@ -26,15 +26,19 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.jellyfin.meta.description;
       "org.opencontainers.image.licenses" = pkgs.jellyfin.meta.license.spdxId;
     };
-    User = "1000:1000";
+    User = "jellyfin";
   };
   contents = [
     pkgs.dockerTools.fakeNss
   ];
   fakeRootCommands = ''
-    mkdir -p ./tmp
-    chmod 777 ./tmp
+    #!${pkgs.runtimeShell}
+    ${pkgs.dockerTools.shadowSetup}
+    groupadd -r jellyfin
+    useradd -r -g jellyfin jellyfin
     mkdir -p ./var/lib/jellyfin
-    chown 1000:1000 ./var/lib/jellyfin
+    chown jellyfin:jellyfin ./var/lib/jellyfin
+    mkdir -p ./var/cache/jellyfin
+    chown jellyfin:jellyfin ./var/cache/jellyfin
   '';
 }

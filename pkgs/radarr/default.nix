@@ -22,13 +22,17 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.radarr.meta.description;
       "org.opencontainers.image.licenses" = pkgs.radarr.meta.license.spdxId;
     };
-    User = "1000:1000";
+    User = "radarr";
   };
   contents = [
     pkgs.dockerTools.fakeNss
   ];
   fakeRootCommands = ''
+    #!${pkgs.runtimeShell}
+    ${pkgs.dockerTools.shadowSetup}
+    groupadd -r radarr
+    useradd -r -g radarr radarr
     mkdir -p ./var/lib/radarr
-    chown 1000:1000 ./var/lib/radarr
+    chown radarr:radarr ./var/lib/radarr
   '';
 }
