@@ -15,32 +15,32 @@ def detect_host_platform []: nothing -> string {
     $"linux/(detect_host_arch)"
 }
 
-def parse_platform [platform: string]: nothing -> record {
-    let parts = ($platform | split row "/")
+def parse_platform []: string -> record {
+    let parts = split row "/"
     {os: ($parts | get 0), arch: ($parts | get 1)}
 }
 
-def parse_image [image: string]: nothing -> string {
-    $image | split row "/" | last | split row ":" | get 0
+def parse_image []: string -> string {
+    split row "/" | last | split row ":" | get 0
 }
 
-def format_arch [arch: string]: nothing -> string {
-    match $arch {
+def format_arch []: string -> string {
+    match $in {
         "amd64" => "x86_64"
         "arm64" => "aarch64"
         "arm32" => "armv7l"
-        _ => $arch
+        _ => $in
     }
 }
 
-def format_image [config: record, platform_parts: record]: nothing -> string {
-    let formatted_arch = (format_arch $platform_parts.arch)
-    $"($config.image)-($formatted_arch)"
+def format_image [platform_parts: record]: record -> string {
+    let formatted_arch = $platform_parts.arch | format_arch
+    $"($in.image)-($formatted_arch)"
 }
 
-def format_nix_flake [config: record, image_name: string, platform_parts: record]: nothing -> string {
-    let formatted_arch = (format_arch $platform_parts.arch)
-    $"($config.build_context)#packages.($formatted_arch)-($platform_parts.os).($image_name)"
+def format_nix_flake [image_name: string, platform_parts: record]: record -> string {
+    let formatted_arch = $platform_parts.arch | format_arch
+    $"($in.build_context)#packages.($formatted_arch)-($platform_parts.os).($image_name)"
 }
 
 def get_platforms []: nothing -> string {
@@ -70,9 +70,9 @@ def get_config []: nothing -> record {
     $config
 }
 
-def load_docker_image [nix_output: string]: nothing -> string {
+def load_docker_image []: string -> string {
     let docker_load_result: string = (try {
-        docker load -i $nix_output | str trim
+        docker load -i str trim
     } catch { |err|
         print $"Error loading Docker image: ($err.msg)"
         exit 1
@@ -105,44 +105,43 @@ def load_docker_image [nix_output: string]: nothing -> string {
     $image_name
 }
 
-def maybe_remove_existing_manifest [image: string]: nothing -> nothing {
+def maybe_remove_existing_manifest []: record -> nothing {
     try {
-        docker manifest rm $image
+        docker manifest rm $in.image
     } catch {
         # Ignore error if manifest doesn't exist
     }
 }
 
-def build_and_load_flake [flake_url: string]: nothing -> string {
-    let nix_output: string = (try {
-        nix build --accept-flake-config --print-out-paths $flake_url | str trim
+def build_and_load_flake []: string -> string {
+    try {
+        nix build --accept-flake-config --print-out-paths str trim
     } catch { |err|
         print $"Error building Nix flake: ($err.msg)"
         exit 1
-    })
-
-    load_docker_image $nix_output
+    }
+    | load_docker_image
 }
 
-def build_platform_image [config: record, platform: string]: nothing -> string {
-    let platform_parts = (parse_platform $platform)
-    let image_name = (parse_image $config.image)
+def build_platform_image [platform: string]: record -> string {
+    let platform_parts = $platform | parse_platform
+    let image_name = $in.image | parse_image
 
     print $"Building ($image_name) for ($platform)..."
 
-    let flake_url = (format_nix_flake $config $image_name $platform_parts)
-    let loaded_image = (build_and_load_flake $flake_url)
+    let flake_url = format_nix_flake $image_name $platform_parts
+    let loaded_image = $flake_url | build_and_load_flake
 
-    let image = (format_image $config $platform_parts)
+    let image = format_image $platform_parts
     docker tag $loaded_image $image
 
     $image
 }
 
-def build_and_push_platform_image [config: record, platform: string]: nothing -> string {
-    let image = (build_platform_image $config $platform)
+def build_and_push_platform_image [platform: string]: record -> string {
+    let image = build_platform_image $platform
 
-    if $config.push_image {
+    if $in.push_image {
         print $"Pushing ($image)..."
         try {
             docker push $image
@@ -155,30 +154,29 @@ def build_and_push_platform_image [config: record, platform: string]: nothing ->
     $image
 }
 
-def build_and_push_all_platform_images [config: record]: nothing -> list<string> {
-    $config.platforms
+def build_and_push_all_platform_images []: record -> list<string> {
+    $in.platforms
         | split row ","
-        | each { |platform|
-            build_and_push_platform_image $config $platform
+        | par-each { |platform|
+            build_and_push_platform_image $platform
         }
 }
 
-def create_and_push_manifest [config: record, manifest_images: list<string>]: nothing -> nothing {
+def create_and_push_manifest [manifest_images: list<string>]: record -> nothing {
     if ($manifest_images | length) > 0 {
-        print $"Creating manifest for ($config.image)..."
+        print $"Creating manifest for ($in.image)..."
 
-        maybe_remove_existing_manifest $config.image
+        maybe_remove_existing_manifest
 
-        docker manifest create $config.image ...$manifest_images
+        docker manifest create $in.image ...$manifest_images
 
-        if $config.push_image {
-            print $"Pushing manifest for ($config.image)..."
-            docker manifest push $config.image
+        if $in.push_image {
+            print $"Pushing manifest for ($in.image)..."
+            docker manifest push $in.image
         }
     }
 }
 
 let config = (get_config)
-let manifest_images = (build_and_push_all_platform_images $config)
-create_and_push_manifest $config $manifest_images
+$config | create_and_push_manifest ($config | build_and_push_all_platform_images)
 print "Build completed successfully"
