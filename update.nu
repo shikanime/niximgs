@@ -15,12 +15,11 @@ def get_flake_packages []: nothing -> list {
     | sort
 }
 
-def update_skaffold_artifacts [] {
+def update_skaffold_artifacts []: record -> record {
     print "[skaffold] Updating skaffold.yaml with nix flake packages..."
     let packages = get_flake_packages
     print $"[skaffold] Found packages: ($packages | str join ', ')"
-    open $"($env.FILE_PWD)/skaffold.yaml"
-    | upsert build.artifacts (
+    $in | upsert build.artifacts (
         $packages | each { |pkg|
             {
                 image: $"ghcr.io/shikanime/niximgs/($pkg)",
@@ -30,17 +29,15 @@ def update_skaffold_artifacts [] {
             }
         }
     )
-    | to yaml
-    | save --force $"($env.FILE_PWD)/skaffold.yaml"
-
-    print $"Updated skaffold.yaml with ($packages | length) packages"
 }
 
 # Update gitignore
 gitnr create repo:github/gitignore/refs/heads/main/Nix.gitignore repo:shikanime/gitignore/refs/heads/main/Devenv.gitignore tt:jetbrains+all tt:linux tt:macos tt:terraform tt:vim tt:visualstudiocode tt:windows | save --force .gitignore
 
 # Update skaffold.yaml with nix packages
-update_skaffold_artifacts
+open $"($env.FILE_PWD)/skaffold.yaml"
+| update_skaffold_artifacts
+| save --force $"($env.FILE_PWD)/skaffold.yaml"
 
 # Update workflows
 print "[workflows] Updating GitHub Actions workflows..."
