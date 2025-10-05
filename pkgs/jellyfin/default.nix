@@ -38,6 +38,10 @@ pkgs.dockerTools.buildLayeredImage {
     useradd -r -g jellyfin jellyfin
     mkdir -p ./var/lib/jellyfin
     chown jellyfin:jellyfin ./var/lib/jellyfin
+    mkdir -p ./var/lib/jellyfin/config
+    chown jellyfin:jellyfin ./var/lib/jellyfin/config
+    mkdir -p ./var/lib/jellyfin/log
+    chown jellyfin:jellyfin ./var/lib/jellyfin/log
     mkdir -p ./var/cache/jellyfin
     chown jellyfin:jellyfin ./var/cache/jellyfin
   '';

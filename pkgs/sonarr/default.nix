@@ -12,13 +12,13 @@ pkgs.dockerTools.buildLayeredImage {
     Cmd = [
       "-nobrowser"
       "-data"
-      "/var/lib/sonarr"
+      "/var/lib/sonarr/data"
     ];
     ExposedPorts = {
       "8989/tcp" = { }; # Web UI
     };
     Env = [
-      "XDG_CONFIG_HOME=/var/lib/sonarr"
+      "XDG_CONFIG_HOME=/var/lib/sonarr/config"
     ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
@@ -35,7 +35,9 @@ pkgs.dockerTools.buildLayeredImage {
     ${pkgs.dockerTools.shadowSetup}
     groupadd -r sonarr
     useradd -r -g sonarr sonarr
-    mkdir -p ./var/lib/sonarr
-    chown sonarr:sonarr ./var/lib/sonarr
+    mkdir -p ./var/lib/sonarr/config
+    chown sonarr:sonarr ./var/lib/sonarr/config
+    mkdir -p ./var/lib/sonarr/data
+    chown sonarr:sonarr ./var/lib/sonarr/data
   '';
 }

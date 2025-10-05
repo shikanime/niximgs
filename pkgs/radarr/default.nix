@@ -12,13 +12,13 @@ pkgs.dockerTools.buildLayeredImage {
     Cmd = [
       "-nobrowser"
       "-data"
-      "/var/lib/radarr"
+      "/var/lib/radarr/data"
     ];
     ExposedPorts = {
       "7878/tcp" = { }; # Web UI
     };
     Env = [
-      "XDG_CONFIG_HOME=/var/lib/radarr"
+      "XDG_CONFIG_HOME=/var/lib/radarr/config"
     ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
@@ -35,7 +35,9 @@ pkgs.dockerTools.buildLayeredImage {
     ${pkgs.dockerTools.shadowSetup}
     groupadd -r radarr
     useradd -r -g radarr radarr
-    mkdir -p ./var/lib/radarr
-    chown radarr:radarr ./var/lib/radarr
+    mkdir -p ./var/lib/radarr/config
+    chown radarr:radarr ./var/lib/radarr/config
+    mkdir -p ./var/lib/radarr/data
+    chown radarr:radarr ./var/lib/radarr/data
   '';
 }
