@@ -21,14 +21,6 @@ pkgs.dockerTools.buildLayeredImage {
       "ROCKET_ADDRESS=0.0.0.0"
       "ROCKET_PORT=80"
     ];
-    User = "vaultwarden";
+    User = "1000:1000";
   };
-  fakeRootCommands = ''
-    #!${pkgs.runtimeShell}
-    ${pkgs.dockerTools.shadowSetup}
-    groupadd -r vaultwarden
-    useradd -r -g vaultwarden vaultwarden
-    mkdir -p ./var/lib/vaultwarden
-    chown vaultwarden:vaultwarden ./var/lib/vaultwarden
-  '';
 }
