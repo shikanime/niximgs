@@ -17,6 +17,9 @@ pkgs.dockerTools.buildLayeredImage {
     ExposedPorts = {
       "8989/tcp" = { }; # Web UI
     };
+    Env = [
+      "XDG_CONFIG_HOME=/var/lib/sonarr"
+    ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.sonarr.meta.description;

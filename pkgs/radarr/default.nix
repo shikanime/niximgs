@@ -17,6 +17,9 @@ pkgs.dockerTools.buildLayeredImage {
     ExposedPorts = {
       "7878/tcp" = { }; # Web UI
     };
+    Env = [
+      "XDG_CONFIG_HOME=/var/lib/radarr"
+    ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.radarr.meta.description;
