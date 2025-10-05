@@ -29,4 +29,5 @@ pkgs.dockerTools.buildLayeredImage {
   contents = [
     pkgs.dockerTools.caCertificates
   ];
+  extraCommands = "mkdir -m 0777 tmp";
 }
