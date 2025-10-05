@@ -2,7 +2,7 @@
 #! nix develop --impure --command nu
 
 def detect_host_arch []: nothing -> string {
-    let arch: string = (uname | get machine)
+    let arch: string = uname | get machine
     match $arch {
         "x86_64" | "amd64" => "amd64"
         "aarch64" | "arm64" | "arm64e" => "arm64"
@@ -45,7 +45,7 @@ def format_nix_flake [image_name: string, platform_parts: record]: record -> str
 
 def get_platforms []: nothing -> string {
     if ($env.PLATFORMS? | default "" | is-empty) {
-        let detected: string = (detect_host_platform)
+        let detected: string = detect_host_platform
         print $"No PLATFORMS specified, detected host platform: ($detected)"
         $detected
     } else {
@@ -58,8 +58,8 @@ def get_push_image []: nothing -> bool {
 }
 
 def get_config []: nothing -> record {
-    let platforms = (get_platforms)
-    let push_image = (get_push_image)
+    let platforms = get_platforms
+    let push_image = get_push_image
     let config = {
         build_context: $env.BUILD_CONTEXT,
         image: $env.IMAGE,
@@ -80,13 +80,13 @@ def load_docker_image []: string -> string {
         $loaded_images | get image.0
     } else {
         # If that fails, try to parse the "already exists" format with more flexible regex
-        let existing_images = ($docker_load_result | parse "The image {image} already exists")
+        let existing_images = $docker_load_result | parse "The image {image} already exists"
 
         if ($existing_images | length) > 0 {
             $existing_images | get image.0
         } else {
             # Try to extract image name from the beginning of "already exists" messages
-            let image_pattern = ($docker_load_result | parse --regex 'The image (?P<image>\S+:\S+) already exists')
+            let image_pattern = $docker_load_result | parse --regex 'The image (?P<image>\S+:\S+) already exists'
 
             if ($image_pattern | length) > 0 {
                 $image_pattern | get image.0
@@ -152,6 +152,6 @@ def create_and_push_manifest [manifest_images: list<string>]: record -> nothing 
     }
 }
 
-let config = (get_config)
+let config = get_config
 $config | create_and_push_manifest ($config | build_and_push_all_platform_images)
 print "Build completed successfully"
