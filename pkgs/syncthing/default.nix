@@ -18,6 +18,7 @@ pkgs.dockerTools.buildLayeredImage {
     Env = [
       "STCONFDIR=/var/lib/syncthing/config"
       "STDATADIR=/var/lib/syncthing/data"
+      "STGUIADDRESS=0.0.0.0:8384"
       "STNODEFAULTFOLDER=1"
     ];
     Labels = {

@@ -26,7 +26,7 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.licenses" = pkgs.jellyfin.meta.license.spdxId;
     };
   };
-  extraCommands = ''
-    mkdir -p tmp var/lib/jellyfin var/lib/jellyfin/config var/lib/jellyfin/log var/cache/jellyfin
-  '';
+  contents = [
+    pkgs.dockerTools.fakeNss
+  ];
 }
