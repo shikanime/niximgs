@@ -22,6 +22,9 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.licenses" = pkgs.sonarr.meta.license.spdxId;
     };
   };
+  contents = [
+    pkgs.dockerTools.fakeNss
+  ];
   extraCommands = ''
     mkdir -p var/lib/sonarr
   '';

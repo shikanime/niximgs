@@ -20,6 +20,9 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.licenses" = pkgs.radarr.meta.license.spdxId;
     };
   };
+  contents = [
+    pkgs.dockerTools.fakeNss
+  ];
   extraCommands = ''
     mkdir -p var/lib/radarr
   '';
