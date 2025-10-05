@@ -71,12 +71,7 @@ def get_config []: nothing -> record {
 }
 
 def load_docker_image []: string -> string {
-    let docker_load_result: string = (try {
-        docker load -i str trim
-    } catch { |err|
-        print $"Error loading Docker image: ($err.msg)"
-        exit 1
-    })
+    let docker_load_result: string = docker load -i $in | str trim
 
     # Try to parse "Loaded image:" format first
     let loaded_images = ($docker_load_result | parse "Loaded image: {image}")
@@ -105,21 +100,8 @@ def load_docker_image []: string -> string {
     $image_name
 }
 
-def maybe_remove_existing_manifest []: record -> nothing {
-    try {
-        docker manifest rm $in.image
-    } catch {
-        # Ignore error if manifest doesn't exist
-    }
-}
-
 def build_and_load_flake []: string -> string {
-    try {
-        nix build --accept-flake-config --print-out-paths str trim
-    } catch { |err|
-        print $"Error building Nix flake: ($err.msg)"
-        exit 1
-    }
+    nix build --accept-flake-config --print-out-paths $in.build_context str trim
     | load_docker_image
 }
 
@@ -143,12 +125,7 @@ def build_and_push_platform_image [platform: string]: record -> string {
 
     if $in.push_image {
         print $"Pushing ($image)..."
-        try {
-            docker push $image
-        } catch { |err|
-            print $"Error pushing image ($image): ($err.msg)"
-            exit 1
-        }
+        docker push $image
     }
 
     $image
@@ -166,7 +143,7 @@ def create_and_push_manifest [manifest_images: list<string>]: record -> nothing 
     if ($manifest_images | length) > 0 {
         print $"Creating manifest for ($in.image)..."
 
-        maybe_remove_existing_manifest
+        docker manifest rm $in.image
 
         docker manifest create $in.image ...$manifest_images
 
