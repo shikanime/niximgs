@@ -1,6 +1,6 @@
 { base, pkgs }:
 
-pkgs.dockerTools.buildLayeredImage {
+pkgs.dockerTools.streamLayeredImage {
   name = "postgresql";
   tag = pkgs.postgresql.version;
   fromImage = base;

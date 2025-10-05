@@ -1,6 +1,6 @@
 { base, pkgs }:
 
-pkgs.dockerTools.buildLayeredImage {
+pkgs.dockerTools.streamLayeredImage {
   name = "vaultwarden";
   tag = pkgs.vaultwarden.version;
   fromImage = base;

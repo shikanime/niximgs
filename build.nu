@@ -71,7 +71,7 @@ def get_skaffold_context []: nothing -> record {
 }
 
 def load_docker_image []: string -> string {
-    let docker_load_result: string = docker load -i $in | str trim
+    let docker_load_result: string = $in | docker load | str trim
 
     # Try to parse "Loaded image:" format first
     let loaded_images = $docker_load_result | parse "Loaded image: {image}"
@@ -101,7 +101,9 @@ def load_docker_image []: string -> string {
 }
 
 def build_flake []: string -> string {
-    nix build --accept-flake-config --print-out-paths $in | str trim
+    let c = nix build --accept-flake-config --print-out-paths $in | str trim
+    print $"Built flake: ($c)"
+    $c
 }
 
 def build_platform_image [ctx: record]: string -> string {
@@ -111,7 +113,7 @@ def build_platform_image [ctx: record]: string -> string {
     print $"Building ($image) for ($in)..."
 
     let flake_url = format_nix_flake $ctx $image $platform
-    let loaded_image = $flake_url | build_flake | load_docker_image
+    let loaded_image = exec ($flake_url | build_flake) | load_docker_image
 
     let image = format_image $ctx $platform
     docker tag $loaded_image $image
@@ -162,6 +164,7 @@ def push_manifest [ctx: record]: nothing -> nothing {
 
 def build_multiplatform_image [ctx: record]: nothing -> nothing {
     let images = build_all_platform_images $ctx
+    print $"Built images: ($images)"
     push_all_images $ctx $images
     create_manifest $ctx $images
     push_manifest $ctx
