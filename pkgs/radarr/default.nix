@@ -8,6 +8,8 @@ pkgs.dockerTools.buildLayeredImage {
   config = {
     Entrypoint = [
       "${pkgs.radarr}/bin/Radarr"
+    ];
+    Cmd = [
       "-nobrowser"
       "-data"
       "/var/lib/radarr"
