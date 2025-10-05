@@ -162,7 +162,6 @@ def push_manifest [ctx: record]: nothing -> nothing {
 
 def build_multiplatform_image [ctx: record]: nothing -> nothing {
     let images = build_all_platform_images $ctx
-    print $"Built images: ($images)"
     push_all_images $ctx $images
     create_manifest $ctx $images
     push_manifest $ctx
