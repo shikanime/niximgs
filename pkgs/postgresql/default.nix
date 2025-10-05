@@ -25,7 +25,7 @@ pkgs.dockerTools.buildLayeredImage {
     };
   };
   fakeRootCommands = ''
-    mkdir -p var/lib/postgresql
-    chown 1000:1000 ./var/lib/postgresql
+    mkdir -p var/lib/postgresql/data
+    chown 1000:1000 ./var/lib/postgresql/data
   '';
 }
