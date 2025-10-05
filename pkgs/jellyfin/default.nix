@@ -15,8 +15,8 @@ pkgs.dockerTools.buildLayeredImage {
       "7359/udp" = { }; # Auto-discovery
     };
     Env = [
-      "JELLYFIN_DATA_DIR=/var/lib/jellyfin"
-      "JELLYFIN_CONFIG_DIR=/etc/jellyfin"
+      "JELLYFIN_DATA_DIR=/var/lib/jellyfin/data"
+      "JELLYFIN_CONFIG_DIR=/var/lib/jellyfin/config"
       "JELLYFIN_LOG_DIR=/var/log/jellyfin"
       "JELLYFIN_CACHE_DIR=/var/cache/jellyfin"
     ];
@@ -32,7 +32,8 @@ pkgs.dockerTools.buildLayeredImage {
   extraCommands = ''
     mkdir -m 0777 /tmp
     mkdir \
-      /var/lib/jellyfin \
+      /var/lib/jellyfin/data \
+      /var/lib/jellyfin/config \
       /var/log/jellyfin \
       /var/cache/jellyfin
   '';
