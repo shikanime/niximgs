@@ -1,6 +1,6 @@
 { base, pkgs }:
 
-pkgs.dockerTools.streamLayeredImage {
+pkgs.dockerTools.buildLayeredImage {
   name = "sonarr";
   tag = pkgs.sonarr.version;
   fromImage = base;

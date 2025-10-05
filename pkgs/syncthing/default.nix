@@ -1,6 +1,6 @@
 { base, pkgs }:
 
-pkgs.dockerTools.streamLayeredImage {
+pkgs.dockerTools.buildLayeredImage {
   name = "syncthing";
   tag = pkgs.syncthing.version;
   fromImage = base;
