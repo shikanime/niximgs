@@ -104,7 +104,7 @@ def build_flake []: string -> string {
     nix build --accept-flake-ctx --print-out-paths $in | str trim
 }
 
-def build_platform_image [ctx: record]: string -> string {
+def build_image [ctx: record]: string -> string {
     let platform_parts = $in | parse_platform
     let image_name = $ctx.image | parse_image
 
@@ -129,7 +129,7 @@ def build_all_platform_images [ctx: record]: nothing -> list<string> {
     $ctx.platforms
         | split row ","
         | par-each { |platform|
-            $platform | build_platform_image $ctx
+            $platform | build_image $ctx
         }
 }
 
