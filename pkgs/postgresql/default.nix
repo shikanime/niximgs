@@ -1,5 +1,8 @@
 { pkgs }:
 
+let
+  dataDir = "/var/lib/postgresql/data";
+in
 pkgs.dockerTools.buildLayeredImage {
   name = "postgresql";
   tag = pkgs.postgresql.version;
@@ -15,7 +18,7 @@ pkgs.dockerTools.buildLayeredImage {
       "POSTGRES_DB=postgres"
       "POSTGRES_USER=postgres"
       "POSTGRES_PASSWORD=postgres"
-      "PGDATA=/var/lib/postgresql/data"
+      "PGDATA=${dataDir}"
     ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
@@ -26,4 +29,7 @@ pkgs.dockerTools.buildLayeredImage {
   contents = [
     pkgs.dockerTools.caCertificates
   ];
+  extraCommands = ''
+    mkdir -p ${dataDir}
+  '';
 }
