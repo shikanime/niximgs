@@ -101,7 +101,7 @@ def load_docker_image []: string -> string {
 }
 
 def build_and_load_flake []: string -> string {
-    nix build --accept-flake-config --print-out-paths $in.build_context str trim
+    nix build --accept-flake-config --print-out-paths $in str trim
     | load_docker_image
 }
 
