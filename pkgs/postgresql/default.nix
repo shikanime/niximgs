@@ -26,7 +26,7 @@ pkgs.dockerTools.buildLayeredImage {
     User = "1000:1000";
   };
   fakeRootCommands = ''
-    mkdir -p var/lib/postgresql/data
+    mkdir -p ./var/lib/postgresql/data
     chown 1000:1000 ./var/lib/postgresql/data
   '';
 }
