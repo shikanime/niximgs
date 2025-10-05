@@ -2,7 +2,6 @@
 
 pkgs.dockerTools.buildLayeredImage {
   name = "base";
-  tag = "latest";
 
   config = {
     Labels = {
