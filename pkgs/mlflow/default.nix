@@ -6,11 +6,14 @@ pkgs.dockerTools.buildLayeredImage {
   fromImage = base;
 
   config = {
+    Cmd = [
+      "server"
+    ];
     Entrypoint = [
       "${pkgs.mlflow-server}/bin/mlflow"
     ];
-    Cmd = [
-      "server"
+    Env = [
+      "PATH=${pkgs.mlflow-server}/bin"
     ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";

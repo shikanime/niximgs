@@ -9,18 +9,19 @@ pkgs.dockerTools.buildLayeredImage {
     Entrypoint = [
       "${pkgs.syncthing}/bin/syncthing"
     ];
+    Env = [
+      "PATH=${pkgs.syncthing}/bin"
+      "STCONFDIR=/var/lib/syncthing/config"
+      "STDATADIR=/var/lib/syncthing/data"
+      "STGUIADDRESS=0.0.0.0:8384"
+      "STNODEFAULTFOLDER=1"
+    ];
     ExposedPorts = {
       "8384/tcp" = { }; # Web UI
       "22000/tcp" = { }; # Sync
       "22000/udp" = { }; # Sync
       "21027/udp" = { }; # Discovery broadcasts
     };
-    Env = [
-      "STCONFDIR=/var/lib/syncthing/config"
-      "STDATADIR=/var/lib/syncthing/data"
-      "STGUIADDRESS=0.0.0.0:8384"
-      "STNODEFAULTFOLDER=1"
-    ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.syncthing.meta.description;

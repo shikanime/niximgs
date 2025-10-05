@@ -6,18 +6,19 @@ pkgs.dockerTools.buildLayeredImage {
   fromImage = base;
 
   config = {
-    Entrypoint = [
-      "${pkgs.sonarr}/bin/Sonarr"
-    ];
     Cmd = [
       "-nobrowser"
       "-data"
       "/var/lib/sonarr/data"
     ];
+    Entrypoint = [
+      "${pkgs.sonarr}/bin/Sonarr"
+    ];
     ExposedPorts = {
       "8989/tcp" = { }; # Web UI
     };
     Env = [
+      "PATH=${pkgs.sonarr}/bin"
       "XDG_CONFIG_HOME=/var/lib/sonarr/config"
     ];
     Labels = {

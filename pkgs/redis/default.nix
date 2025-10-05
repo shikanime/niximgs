@@ -9,6 +9,9 @@ pkgs.dockerTools.buildLayeredImage {
     Entrypoint = [
       "${pkgs.redis}/bin/redis-server"
     ];
+    Env = [
+      "PATH=${pkgs.redis}/bin"
+    ];
     ExposedPorts = {
       "6379/tcp" = { }; # Redis default port
     };
