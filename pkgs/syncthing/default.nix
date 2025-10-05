@@ -2,7 +2,7 @@
 
 let
   configDir = "/var/lib/syncthing/config";
-
+  dataDir = "/var/lib/syncthing/data";
 in
 pkgs.dockerTools.buildLayeredImage {
   name = "syncthing";
