@@ -24,8 +24,8 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.licenses" = pkgs.postgresql.meta.license.spdxId;
     };
   };
-  runAsRoot = ''
-    #!${pkgs.runtimeShell}
+  enableFakechroot = true;
+  fakeRootCommands = ''
     ${pkgs.dockerTools.shadowSetup}
     groupadd -r postgres
     useradd -r -g postgres postgres
