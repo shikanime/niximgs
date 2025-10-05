@@ -25,7 +25,8 @@ pkgs.dockerTools.buildLayeredImage {
   contents = [
     pkgs.dockerTools.fakeNss
   ];
-  extraCommands = ''
-    mkdir -p var/lib/sonarr
+  fakeRootCommands = ''
+    mkdir -p ./var/lib/sonarr
+    chown 1000:1000 ./var/lib/sonarr
   '';
 }
