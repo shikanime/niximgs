@@ -22,9 +22,11 @@ pkgs.dockerTools.buildLayeredImage {
       "STNODEFAULTFOLDER=1"
     ];
     Labels = {
+      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.syncthing.meta.description;
       "org.opencontainers.image.licenses" = pkgs.syncthing.meta.license.spdxId;
     };
+    User = "1000:1000";
   };
   fakeRootCommands = ''
     mkdir -p ./var/lib/syncthing/config

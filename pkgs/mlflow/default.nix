@@ -13,8 +13,10 @@ pkgs.dockerTools.buildLayeredImage {
       "server"
     ];
     Labels = {
+      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.mlflow-server.meta.description;
       "org.opencontainers.image.licenses" = pkgs.mlflow-server.meta.license.spdxId;
     };
+    User = "1000:1000";
   };
 }
