@@ -1,6 +1,5 @@
 name: Packages
 on:
-on:
   workflow_run:
     workflows:
       - check
