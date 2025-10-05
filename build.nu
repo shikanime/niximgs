@@ -70,7 +70,7 @@ def get_skaffold_context []: nothing -> record {
     $ctx
 }
 
-def load_docker_image []: string -> string {
+def load_docker_image []: binary -> string {
     let docker_load_result: string = $in | docker load | str trim
 
     # Try to parse "Loaded image:" format first
@@ -100,7 +100,7 @@ def load_docker_image []: string -> string {
     $image
 }
 
-def build_flake []: string -> string {
+def build_flake []: string -> binary {
     exec (nix build --accept-flake-config --print-out-paths $in | str trim)
 }
 
