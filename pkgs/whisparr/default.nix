@@ -12,27 +12,28 @@ pkgs.dockerTools.buildLayeredImage {
     Cmd = [
       "-nobrowser"
       "-data"
-      "/var/lib/whisparr"
+      "/var/lib/whisparr/data"
     ];
     ExposedPorts = {
       "6969/tcp" = { }; # Web UI
     };
+    Env = [
+      "XDG_CONFIG_HOME=/var/lib/whisparr/config"
+    ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.whisparr.meta.description;
       "org.opencontainers.image.licenses" = pkgs.whisparr.meta.license.spdxId;
     };
-    User = "whisparr";
+    User = "1000:1000";
   };
   contents = [
     pkgs.dockerTools.fakeNss
   ];
   fakeRootCommands = ''
-    #!${pkgs.runtimeShell}
-    ${pkgs.dockerTools.shadowSetup}
-    groupadd -r whisparr
-    useradd -r -g whisparr whisparr
-    mkdir -p ./var/lib/whisparr
-    chown whisparr:whisparr ./var/lib/whisparr
+    mkdir -p ./var/lib/whisparr/config
+    chown 1000:1000 ./var/lib/whisparr/config
+    mkdir -p ./var/lib/whisparr/data
+    chown 1000:1000 ./var/lib/whisparr/data
   '';
 }

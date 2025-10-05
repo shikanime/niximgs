@@ -23,4 +23,8 @@ pkgs.dockerTools.buildLayeredImage {
     ];
     User = "1000:1000";
   };
+  fakeRootCommands = ''
+    mkdir -p ./var/lib/vaultwarden
+    chown 1000:1000 ./var/lib/vaultwarden
+  '';
 }

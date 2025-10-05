@@ -23,8 +23,6 @@ pkgs.dockerTools.buildLayeredImage {
     pkgs.dockerTools.fakeNss
   ];
   fakeRootCommands = ''
-    mkdir -p ./tmp
-    chmod 777 ./tmp
     mkdir -p ./var/lib/redis
     chown 1000:1000 ./var/lib/redis
   '';
