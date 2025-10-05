@@ -32,6 +32,10 @@ pkgs.dockerTools.buildLayeredImage {
   fakeRootCommands = ''
     mkdir -p ./var/lib/jellyfin
     chown 1000:1000 ./var/lib/jellyfin
+    mkdir -p ./var/lib/jellyfin/config
+    chown 1000:1000 ./var/lib/jellyfin/config
+    mkdir -p ./var/lib/jellyfin/log
+    chown 1000:1000 ./var/lib/jellyfin/log
     mkdir -p ./var/cache/jellyfin
     chown 1000:1000 ./var/cache/jellyfin
   '';
