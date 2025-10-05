@@ -34,7 +34,7 @@ jobs:
             --accept-flake-config \
             --impure \
             -c skaffold build \
-              --platform ${{ matrix.platform }} \
+              --platform linux/amd64,linux/arm64 \
               --build-image ghcr.io/shikanime/niximgs/${{ matrix.image }}
     strategy:
       matrix:
@@ -50,6 +50,3 @@ jobs:
           - uv
           - vaultwarden
           - whisparr
-        platform:
-          - linux/amd64
-          - linux/arm64
