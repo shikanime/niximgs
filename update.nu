@@ -10,8 +10,8 @@ def get_flake_packages []: nothing -> list {
         $item.packages | transpose name info | get name
     }
     | flatten
-    | uniq
     | where $it not-in ["devenv-test", "devenv-up"]
+    | uniq
     | sort
 }
 
