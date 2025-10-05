@@ -24,12 +24,11 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.licenses" = pkgs.postgresql.meta.license.spdxId;
     };
   };
-  enableFakechroot = true;
   fakeRootCommands = ''
     ${pkgs.dockerTools.shadowSetup}
     groupadd -r postgres
     useradd -r -g postgres postgres
-    mkdir /var/lib/postgresql
-    chown postgres:postgres /var/lib/postgresql
+    mkdir var/lib/postgresql
+    chown postgres:postgres var/lib/postgresql
   '';
 }
