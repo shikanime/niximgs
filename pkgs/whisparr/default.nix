@@ -10,6 +10,8 @@ pkgs.dockerTools.buildLayeredImage {
   config = {
     Entrypoint = [
       "${pkgs.whisparr}/bin/Whisparr"
+    ];
+    Cmd = [
       "-nobrowser"
       "-data"
       dataDir
