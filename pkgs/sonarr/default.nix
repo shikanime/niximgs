@@ -17,18 +17,25 @@ pkgs.dockerTools.buildLayeredImage {
     ExposedPorts = {
       "8989/tcp" = { }; # Web UI
     };
+    Env = [
+      "XDG_CONFIG_HOME=/var/lib/sonarr"
+    ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.sonarr.meta.description;
       "org.opencontainers.image.licenses" = pkgs.sonarr.meta.license.spdxId;
     };
-    User = "1000:1000";
+    User = "sonarr";
   };
   contents = [
     pkgs.dockerTools.fakeNss
   ];
   fakeRootCommands = ''
+    #!${pkgs.runtimeShell}
+    ${pkgs.dockerTools.shadowSetup}
+    groupadd -r sonarr
+    useradd -r -g sonarr sonarr
     mkdir -p ./var/lib/sonarr
-    chown 1000:1000 ./var/lib/sonarr
+    chown sonarr:sonarr ./var/lib/sonarr
   '';
 }

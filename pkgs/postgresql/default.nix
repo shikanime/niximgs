@@ -23,10 +23,14 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.postgresql.meta.description;
       "org.opencontainers.image.licenses" = pkgs.postgresql.meta.license.spdxId;
     };
-    User = "1000:1000";
+    User = "postgres";
   };
   fakeRootCommands = ''
+    #!${pkgs.runtimeShell}
+    ${pkgs.dockerTools.shadowSetup}
+    groupadd -r postgres
+    useradd -r -g postgres postgres
     mkdir -p ./var/lib/postgresql/data
-    chown 1000:1000 ./var/lib/postgresql/data
+    chown postgres:postgres ./var/lib/postgresql/data
   '';
 }

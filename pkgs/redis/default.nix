@@ -17,15 +17,17 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.redis.meta.description;
       "org.opencontainers.image.licenses" = pkgs.redis.meta.license.spdxId;
     };
-    User = "1000:1000";
+    User = "redis";
   };
   contents = [
     pkgs.dockerTools.fakeNss
   ];
   fakeRootCommands = ''
-    mkdir -p ./tmp
-    chmod 777 ./tmp
+    #!${pkgs.runtimeShell}
+    ${pkgs.dockerTools.shadowSetup}
+    groupadd -r redis
+    useradd -r -g redis redis
     mkdir -p ./var/lib/redis
-    chown 1000:1000 ./var/lib/redis
+    chown redis:redis ./var/lib/redis
   '';
 }

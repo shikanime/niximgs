@@ -26,12 +26,16 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.syncthing.meta.description;
       "org.opencontainers.image.licenses" = pkgs.syncthing.meta.license.spdxId;
     };
-    User = "1000:1000";
+    User = "syncthing";
   };
   fakeRootCommands = ''
+    #!${pkgs.runtimeShell}
+    ${pkgs.dockerTools.shadowSetup}
+    groupadd -r syncthing
+    useradd -r -g syncthing syncthing
     mkdir -p ./var/lib/syncthing/config
-    chown 1000:1000 ./var/lib/syncthing/config
+    chown syncthing:syncthing ./var/lib/syncthing/config
     mkdir -p ./var/lib/syncthing/data
-    chown 1000:1000 ./var/lib/syncthing/data
+    chown syncthing:syncthing ./var/lib/syncthing/data
   '';
 }

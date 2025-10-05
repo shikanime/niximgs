@@ -17,18 +17,25 @@ pkgs.dockerTools.buildLayeredImage {
     ExposedPorts = {
       "7878/tcp" = { }; # Web UI
     };
+    Env = [
+      "XDG_CONFIG_HOME=/var/lib/radarr"
+    ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.radarr.meta.description;
       "org.opencontainers.image.licenses" = pkgs.radarr.meta.license.spdxId;
     };
-    User = "1000:1000";
+    User = "radarr";
   };
   contents = [
     pkgs.dockerTools.fakeNss
   ];
   fakeRootCommands = ''
+    #!${pkgs.runtimeShell}
+    ${pkgs.dockerTools.shadowSetup}
+    groupadd -r radarr
+    useradd -r -g radarr radarr
     mkdir -p ./var/lib/radarr
-    chown 1000:1000 ./var/lib/radarr
+    chown radarr:radarr ./var/lib/radarr
   '';
 }
