@@ -1,85 +1,81 @@
 #!/usr/bin/env nix
 #! nix develop --impure --command nu
 
-def get_latest_action [action: string] {
-    try {
-        gh api $"repos/($action)/tags"
-        | from json
-        | get name
-        | where ($it =~ '^v[0-9]+$')
-        | first
-    } catch {
-        null
-    }
+def get_latest_action []: string -> string {
+    gh api $"repos/($in)/tags"
+    | from json
+    | get name
+    | where ($it =~ '^v[0-9]+$')
+    | first
 }
 
-def parse_action [uses: string]: nothing -> string {
-    $uses | split row "@" | first
+def parse_action []: nothing -> string {
+    $in | split row "@" | first
 }
 
-def update_workflow_job_step_actions [step: record] {
-    if "uses" in $step {
-        let action = (parse_action $step.uses)
-        let version = (get_latest_action $action)
-        if $version != null {
-            $step | upsert uses $"($action)@($version)"
-        } else {
-            $step
-        }
+def parse_version []: nothing -> string {
+    $in | split row "@" | last
+}
+
+def update_workflow_job_step_actions []: record -> record {
+    if "uses" in $in {
+        let action = $in.uses | parse_action
+        let version = $action | get_latest_action
+        $in | update uses $"($action)@($version)"
     } else {
-        $step
+        $in
     }
 }
 
-def update_workflow_job_actions [job: record] {
-    $job | update steps {
+def update_workflow_job_actions []: record -> record {
+    $in | update steps {
         each { |step|
-            (update_workflow_job_step_actions $step)
+            $step | update_workflow_job_step_actions
         }
     }
 }
 
 
-def update_workflow_actions [workflow: record] {
-    $workflow
+def update_workflow_actions []: record -> record {
+    $in
     | update jobs {
         items { |$name, job|
-            { $name: (update_workflow_job_actions $job) }
+            { $name: ($job | update_workflow_job_actions) }
         }
         | into record
     }
 }
 
-def parse_image [image: string]: nothing -> string {
-    $image | split row "/" | last | split row ":" | get 0
+def parse_image []: string -> string {
+    $in | split row "/" | last | split row ":" | get 0
 }
 
 def get_skaffold_images []: nothing -> list<string> {
     open $"($env.FILE_PWD)/../../skaffold.yaml"
     | get build.artifacts
     | each { |artifact| $artifact.image }
-    | each { |image| (parse_image $image) }
+    | each { |image| $image | parse_image }
 }
 
-def update_workflow_packages [workflow: record] {
-    print $"Processing packages configuration in ($workflow)..."
+def update_workflow_packages []: record -> record {
     let images = (get_skaffold_images)
     print $"Images: ($images | str join ', ')"
-    $workflow | upsert jobs.packages.strategy.matrix.image $images
+    $in | upsert jobs.packages.strategy.matrix.image $images
 }
 
-def update_workflow [name: string, workflow: record] {
+def update_workflow [name: string]: record -> record {
     if $name == "packages.yaml" {
-        update_workflow_actions (update_workflow_packages $workflow)
+        $in | update_workflow_packages | update_workflow_actions
     } else {
-        update_workflow_actions $workflow
+        $in | update_workflow_actions
     }
 }
 
 print "Updating GitHub Actions workflows..."
 glob $"($env.FILE_PWD)/*.{yml,yaml}"
     | each { |workflow|
-        update_workflow ($workflow | path basename) (open $workflow)
+        open $workflow
+        | update_workflow ($workflow | path basename)
         | save --force $workflow
     }
     | ignore

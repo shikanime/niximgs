@@ -2,11 +2,11 @@ name: Packages
 on:
   push:
     branches:
-      - main
+    - main
   pull_request:
     branches:
-      - main
-      - gh/*/*/base
+    - main
+    - gh/*/*/base
 jobs:
   packages:
     runs-on: ubuntu-latest
@@ -16,40 +16,40 @@ jobs:
       attestations: write
       id-token: write
     steps:
-      - uses: actions/checkout@v5
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/setup-qemu-action@v3
-      - uses: DeterminateSystems/nix-installer-action@v20
-        with:
-          extra-conf: |
-            extra-platforms = aarch64-linux
-          github-token: ${{ secrets.NIX_GITHUB_TOKEN }}
-      - uses: DeterminateSystems/magic-nix-cache-action@v13
-      - run: |
-          nix develop \
-            --accept-flake-config \
-            --impure \
-            -c skaffold build \
-              --platform ${{ matrix.platform }} \
-              --build-image ghcr.io/shikanime/niximgs/${{ matrix.image }}
+    - uses: actions/checkout@v5
+    - uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - uses: docker/setup-qemu-action@v3
+    - uses: DeterminateSystems/nix-installer-action@v20
+      with:
+        extra-conf: |
+          extra-platforms = aarch64-linux
+        github-token: ${{ secrets.NIX_GITHUB_TOKEN }}
+    - uses: DeterminateSystems/magic-nix-cache-action@v13
+    - run: |
+        nix develop \
+          --accept-flake-config \
+          --impure \
+          -c skaffold build \
+            --platform ${{ matrix.platform }} \
+            --build-image ghcr.io/shikanime/niximgs/${{ matrix.image }}
     strategy:
       matrix:
         image:
-          - jellyfin
-          - mlflow
-          - postgresql
-          - python
-          - radarr
-          - redis
-          - sonarr
-          - syncthing
-          - uv
-          - vaultwarden
-          - whisparr
+        - jellyfin
+        - mlflow
+        - postgresql
+        - python
+        - radarr
+        - redis
+        - sonarr
+        - syncthing
+        - uv
+        - vaultwarden
+        - whisparr
       platform:
-        - linux/amd64
-        - linux/arm64
+      - linux/amd64
+      - linux/arm64
