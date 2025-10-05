@@ -1,8 +1,54 @@
 #!/usr/bin/env nix
 #! nix develop --impure --command nu
 
+def update_skaffold_artifacts [] {
+    print "[skaffold] Updating skaffold.yaml with nix flake packages..."
+
+    # Get packages from nix flake
+    let packages = (
+        nix flake show --impure --json --all-systems
+        | from json
+        | get packages
+    )
+
+    # Extract package names for each system
+    let packages = (
+        $packages
+        | transpose system packages
+        | each { |item|
+            $item.packages | transpose name info | get name
+        }
+        | flatten
+        | uniq
+        | where $it not-in ["devenv-test", "devenv-up"]
+        | sort
+    )
+
+    print $"[skaffold] Found packages: ($packages | str join ', ')"
+
+    # Update only the build.artifacts section
+    open $"($env.FILE_PWD)/skaffold.yaml"
+    | upsert build.artifacts (
+        $packages | each { |pkg|
+            {
+                image: $"ghcr.io/shikanime/niximgs/($pkg)",
+                custom: {
+                    buildCommand: "./build.nu"
+                }
+            }
+        }
+    )
+    | to yaml
+    | save --force $"($env.FILE_PWD)/skaffold.yaml"
+
+    print $"Updated skaffold.yaml with ($packages | length) packages"
+}
+
 # Update gitignore
 gitnr create repo:github/gitignore/refs/heads/main/Nix.gitignore repo:shikanime/gitignore/refs/heads/main/Devenv.gitignore tt:jetbrains+all tt:linux tt:macos tt:terraform tt:vim tt:visualstudiocode tt:windows | save --force .gitignore
+
+# Update skaffold.yaml with nix packages
+update_skaffold_artifacts
 
 # Update workflows
 print "[workflows] Updating GitHub Actions workflows..."
