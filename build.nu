@@ -101,7 +101,7 @@ def load_docker_image []: string -> string {
 }
 
 def build_flake []: string -> string {
-    nix build --accept-flake-ctx --print-out-paths $in | str trim
+    nix build --accept-flake-config --print-out-paths $in | str trim
 }
 
 def build_platform_image [ctx: record]: string -> string {

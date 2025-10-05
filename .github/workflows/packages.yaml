@@ -6,7 +6,6 @@ on:
   pull_request:
     branches:
       - main
-      - gh/*/*/base
 jobs:
   packages:
     runs-on: ubuntu-latest
