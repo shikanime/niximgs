@@ -29,5 +29,11 @@ pkgs.dockerTools.buildLayeredImage {
   contents = [
     pkgs.dockerTools.caCertificates
   ];
-  extraCommands = "mkdir -m 0777 tmp";
+  extraCommands = ''
+    mkdir -m 0777 /tmp
+    mkdir \
+      /var/lib/jellyfin \
+      /var/log/jellyfin \
+      /var/cache/jellyfin
+  '';
 }
