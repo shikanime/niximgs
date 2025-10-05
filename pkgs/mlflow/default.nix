@@ -22,4 +22,7 @@ pkgs.dockerTools.buildLayeredImage {
     };
     User = "1000:1000";
   };
+  contents = [
+    pkgs.mlflow-server
+  ];
 }

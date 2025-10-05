@@ -10,7 +10,6 @@ pkgs.dockerTools.buildLayeredImage {
       "${pkgs.postgresql}/bin/postgres"
     ];
     Env = [
-      "PATH=${pkgs.postgresql}/bin"
       "PGDATA=/var/lib/postgresql/data/${pkgs.postgresql.psqlSchema}"
     ];
     ExposedPorts = {
@@ -23,6 +22,9 @@ pkgs.dockerTools.buildLayeredImage {
     };
     User = "1000:1000";
   };
+  contents = [
+    pkgs.postgresql
+  ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/postgresql/data/${pkgs.postgresql.psqlSchema}
     chown 1000:1000 ./var/lib/postgresql/data/${pkgs.postgresql.psqlSchema}

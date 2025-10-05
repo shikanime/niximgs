@@ -10,7 +10,6 @@ pkgs.dockerTools.buildLayeredImage {
       "${pkgs.syncthing}/bin/syncthing"
     ];
     Env = [
-      "PATH=${pkgs.syncthing}/bin"
       "STCONFDIR=/var/lib/syncthing/config"
       "STDATADIR=/var/lib/syncthing/data"
       "STGUIADDRESS=0.0.0.0:8384"
@@ -29,6 +28,9 @@ pkgs.dockerTools.buildLayeredImage {
     };
     User = "1000:1000";
   };
+  contents = [
+    pkgs.syncthing
+  ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/syncthing/config
     chown 1000:1000 ./var/lib/syncthing/config

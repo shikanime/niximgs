@@ -10,7 +10,6 @@ pkgs.dockerTools.buildLayeredImage {
       "${pkgs.jellyfin}/bin/jellyfin"
     ];
     Env = [
-      "PATH=${pkgs.jellyfin}/bin"
       "JELLYFIN_DATA_DIR=/var/lib/jellyfin"
       "JELLYFIN_CACHE_DIR=/var/cache/jellyfin"
     ];
@@ -29,6 +28,7 @@ pkgs.dockerTools.buildLayeredImage {
   };
   contents = [
     pkgs.dockerTools.fakeNss
+    pkgs.jellyfin
   ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/jellyfin

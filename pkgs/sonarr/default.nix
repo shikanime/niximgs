@@ -18,7 +18,6 @@ pkgs.dockerTools.buildLayeredImage {
       "8989/tcp" = { }; # Web UI
     };
     Env = [
-      "PATH=${pkgs.sonarr}/bin"
       "XDG_CONFIG_HOME=/var/lib/sonarr/config"
     ];
     Labels = {
@@ -30,6 +29,7 @@ pkgs.dockerTools.buildLayeredImage {
   };
   contents = [
     pkgs.dockerTools.fakeNss
+    pkgs.sonarr
   ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/sonarr/config

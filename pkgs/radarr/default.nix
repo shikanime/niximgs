@@ -15,7 +15,6 @@ pkgs.dockerTools.buildLayeredImage {
       "${pkgs.radarr}/bin/Radarr"
     ];
     Env = [
-      "PATH=${pkgs.radarr}/bin"
       "XDG_CONFIG_HOME=/var/lib/radarr/config"
     ];
     ExposedPorts = {
@@ -30,6 +29,7 @@ pkgs.dockerTools.buildLayeredImage {
   };
   contents = [
     pkgs.dockerTools.fakeNss
+    pkgs.radarr
   ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/radarr/config

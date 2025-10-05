@@ -10,7 +10,6 @@ pkgs.dockerTools.buildLayeredImage {
       "${pkgs.vaultwarden}/bin/vaultwarden"
     ];
     Env = [
-      "PATH=${pkgs.vaultwarden}/bin"
       "ROCKET_ADDRESS=0.0.0.0"
       "ROCKET_PORT=80"
     ];
@@ -24,6 +23,9 @@ pkgs.dockerTools.buildLayeredImage {
     };
     User = "1000:1000";
   };
+  contents = [
+    pkgs.vaultwarden
+  ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/vaultwarden
     chown 1000:1000 ./var/lib/vaultwarden

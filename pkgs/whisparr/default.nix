@@ -15,7 +15,6 @@ pkgs.dockerTools.buildLayeredImage {
       "${pkgs.whisparr}/bin/Whisparr"
     ];
     Env = [
-      "PATH=${pkgs.whisparr}/bin"
       "XDG_CONFIG_HOME=/var/lib/whisparr/config"
     ];
     ExposedPorts = {
@@ -30,6 +29,7 @@ pkgs.dockerTools.buildLayeredImage {
   };
   contents = [
     pkgs.dockerTools.fakeNss
+    pkgs.whisparr
   ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/whisparr/config
