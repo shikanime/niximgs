@@ -33,7 +33,9 @@ jobs:
           nix develop \
             --accept-flake-config \
             --impure \
-            -c skaffold build --platform linux/amd64,linux/arm64
+            -c skaffold build \
+              --platform ${{ matrix.platform }} \
+              --build-image ghcr.io/shikanime/niximgs/${{ matrix.image }}
     strategy:
       matrix:
         image:
@@ -48,3 +50,6 @@ jobs:
           - uv
           - vaultwarden
           - whisparr
+      platform:
+        - linux/amd64
+        - linux/arm64
