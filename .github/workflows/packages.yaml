@@ -1,15 +1,16 @@
 name: Packages
 on:
-  push:
+on:
+  workflow_run:
+    workflows:
+      - check
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+    types:
+      - completed
 jobs:
   packages:
     runs-on: ubuntu-latest
-    needs: check
     permissions:
       contents: read
       packages: write
