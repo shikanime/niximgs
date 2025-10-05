@@ -101,7 +101,7 @@ def load_docker_image []: string -> string {
 }
 
 def build_flake []: string -> string {
-    nix build --accept-flake-config --print-out-paths $in | str trim
+    exec (nix build --accept-flake-config --print-out-paths $in | str trim)
 }
 
 def build_platform_image [ctx: record]: string -> string {
@@ -111,7 +111,7 @@ def build_platform_image [ctx: record]: string -> string {
     print $"Building ($image) for ($in)..."
 
     let flake_url = format_nix_flake $ctx $image $platform
-    let loaded_image = exec ($flake_url | build_flake) | load_docker_image
+    let loaded_image = $flake_url | build_flake | load_docker_image
 
     let image = format_image $ctx $platform
     docker tag $loaded_image $image
