@@ -1,8 +1,9 @@
-{ pkgs }:
+{ base, pkgs }:
 
 pkgs.dockerTools.buildLayeredImage {
   name = "mlflow";
   tag = pkgs.mlflow-server.version;
+  fromImage = base;
 
   config = {
     Entrypoint = [
@@ -12,12 +13,8 @@ pkgs.dockerTools.buildLayeredImage {
       "server"
     ];
     Labels = {
-      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.mlflow-server.meta.description;
       "org.opencontainers.image.licenses" = pkgs.mlflow-server.meta.license.spdxId;
     };
   };
-  contents = [
-    pkgs.dockerTools.caCertificates
-  ];
 }

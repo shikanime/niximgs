@@ -1,12 +1,9 @@
-{ pkgs }:
+{ base, pkgs }:
 
-let
-  configDir = "/var/lib/syncthing/config";
-  dataDir = "/var/lib/syncthing/data";
-in
 pkgs.dockerTools.buildLayeredImage {
   name = "syncthing";
   tag = pkgs.syncthing.version;
+  fromImage = base;
 
   config = {
     Entrypoint = [
@@ -19,20 +16,16 @@ pkgs.dockerTools.buildLayeredImage {
       "21027/udp" = { }; # Discovery broadcasts
     };
     Env = [
-      "STCONFDIR=${configDir}"
-      "STDATADIR=${dataDir}"
+      "STCONFDIR=/var/lib/syncthing/config"
+      "STDATADIR=/var/lib/syncthing/data"
       "STNODEFAULTFOLDER=1"
     ];
     Labels = {
-      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.syncthing.meta.description;
       "org.opencontainers.image.licenses" = pkgs.syncthing.meta.license.spdxId;
     };
   };
-  contents = [
-    pkgs.dockerTools.caCertificates
-  ];
   extraCommands = ''
-    mkdir -p ${configDir} ${dataDir}
+    mkdir -p var/lib/syncthing/config var/lib/syncthing/data
   '';
 }

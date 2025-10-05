@@ -1,11 +1,9 @@
-{ pkgs }:
+{ base, pkgs }:
 
-let
-  dataDir = "/var/lib/whisparr";
-in
 pkgs.dockerTools.buildLayeredImage {
   name = "whisparr";
   tag = pkgs.whisparr.version;
+  fromImage = base;
 
   config = {
     Entrypoint = [
@@ -14,21 +12,17 @@ pkgs.dockerTools.buildLayeredImage {
     Cmd = [
       "-nobrowser"
       "-data"
-      dataDir
+      "/var/lib/whisparr"
     ];
     ExposedPorts = {
       "6969/tcp" = { }; # Web UI
     };
     Labels = {
-      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.whisparr.meta.description;
       "org.opencontainers.image.licenses" = pkgs.whisparr.meta.license.spdxId;
     };
   };
-  contents = [
-    pkgs.dockerTools.caCertificates
-  ];
   extraCommands = ''
-    mkdir -p ${dataDir}
+    mkdir -p var/lib/whisparr
   '';
 }

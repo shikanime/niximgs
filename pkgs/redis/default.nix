@@ -1,8 +1,9 @@
-{ pkgs }:
+{ base, pkgs }:
 
 pkgs.dockerTools.buildLayeredImage {
   name = "redis";
   tag = pkgs.redis.version;
+  fromImage = base;
 
   config = {
     Entrypoint = [
@@ -12,12 +13,8 @@ pkgs.dockerTools.buildLayeredImage {
       "6379/tcp" = { }; # Redis default port
     };
     Labels = {
-      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.redis.meta.description;
       "org.opencontainers.image.licenses" = pkgs.redis.meta.license.spdxId;
     };
   };
-  contents = [
-    pkgs.dockerTools.caCertificates
-  ];
 }

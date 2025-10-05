@@ -71,15 +71,16 @@
             ];
           };
           packages = {
-            jellyfin = pkgs.callPackage ./pkgs/jellyfin { };
-            mlflow = pkgs.callPackage ./pkgs/mlflow { };
-            postgresql = pkgs.callPackage ./pkgs/postgresql { };
-            radarr = pkgs.callPackage ./pkgs/radarr { };
-            redis = pkgs.callPackage ./pkgs/redis { };
-            sonarr = pkgs.callPackage ./pkgs/sonarr { };
-            syncthing = pkgs.callPackage ./pkgs/syncthing { };
-            vaultwarden = pkgs.callPackage ./pkgs/vaultwarden { };
-            whisparr = pkgs.callPackage ./pkgs/whisparr { };
+            base = pkgs.callPackage ./pkgs/base { };
+            jellyfin = pkgs.callPackage ./pkgs/jellyfin { inherit (self'.packages) base; };
+            mlflow = pkgs.callPackage ./pkgs/mlflow { inherit (self'.packages) base; };
+            postgresql = pkgs.callPackage ./pkgs/postgresql { inherit (self'.packages) base; };
+            radarr = pkgs.callPackage ./pkgs/radarr { inherit (self'.packages) base; };
+            redis = pkgs.callPackage ./pkgs/redis { inherit (self'.packages) base; };
+            sonarr = pkgs.callPackage ./pkgs/sonarr { inherit (self'.packages) base; };
+            syncthing = pkgs.callPackage ./pkgs/syncthing { inherit (self'.packages) base; };
+            vaultwarden = pkgs.callPackage ./pkgs/vaultwarden { inherit (self'.packages) base; };
+            whisparr = pkgs.callPackage ./pkgs/whisparr { inherit (self'.packages) base; };
           };
         };
       systems = [
