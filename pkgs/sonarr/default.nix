@@ -25,19 +25,15 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.sonarr.meta.description;
       "org.opencontainers.image.licenses" = pkgs.sonarr.meta.license.spdxId;
     };
-    User = "sonarr";
+    User = "1000:1000";
   };
   contents = [
     pkgs.dockerTools.fakeNss
   ];
   fakeRootCommands = ''
-    #!${pkgs.runtimeShell}
-    ${pkgs.dockerTools.shadowSetup}
-    groupadd -r sonarr
-    useradd -r -g sonarr sonarr
     mkdir -p ./var/lib/sonarr/config
-    chown sonarr:sonarr ./var/lib/sonarr/config
+    chown 1000:1000 ./var/lib/sonarr/config
     mkdir -p ./var/lib/sonarr/data
-    chown sonarr:sonarr ./var/lib/sonarr/data
+    chown 1000:1000 ./var/lib/sonarr/data
   '';
 }

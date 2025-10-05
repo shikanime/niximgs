@@ -17,8 +17,6 @@ pkgs.dockerTools.buildLayeredImage {
     };
     Env = [
       "JELLYFIN_DATA_DIR=/var/lib/jellyfin"
-      "JELLYFIN_CONFIG_DIR=/var/lib/jellyfin/config"
-      "JELLYFIN_LOG_DIR=/var/lib/jellyfin/log"
       "JELLYFIN_CACHE_DIR=/var/cache/jellyfin"
     ];
     Labels = {
@@ -26,23 +24,15 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.jellyfin.meta.description;
       "org.opencontainers.image.licenses" = pkgs.jellyfin.meta.license.spdxId;
     };
-    User = "jellyfin";
+    User = "1000:1000";
   };
   contents = [
     pkgs.dockerTools.fakeNss
   ];
   fakeRootCommands = ''
-    #!${pkgs.runtimeShell}
-    ${pkgs.dockerTools.shadowSetup}
-    groupadd -r jellyfin
-    useradd -r -g jellyfin jellyfin
     mkdir -p ./var/lib/jellyfin
-    chown jellyfin:jellyfin ./var/lib/jellyfin
-    mkdir -p ./var/lib/jellyfin/config
-    chown jellyfin:jellyfin ./var/lib/jellyfin/config
-    mkdir -p ./var/lib/jellyfin/log
-    chown jellyfin:jellyfin ./var/lib/jellyfin/log
+    chown 1000:1000 ./var/lib/jellyfin
     mkdir -p ./var/cache/jellyfin
-    chown jellyfin:jellyfin ./var/cache/jellyfin
+    chown 1000:1000 ./var/cache/jellyfin
   '';
 }

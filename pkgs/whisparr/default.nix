@@ -25,19 +25,15 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.whisparr.meta.description;
       "org.opencontainers.image.licenses" = pkgs.whisparr.meta.license.spdxId;
     };
-    User = "whisparr";
+    User = "1000:1000";
   };
   contents = [
     pkgs.dockerTools.fakeNss
   ];
   fakeRootCommands = ''
-    #!${pkgs.runtimeShell}
-    ${pkgs.dockerTools.shadowSetup}
-    groupadd -r whisparr
-    useradd -r -g whisparr whisparr
     mkdir -p ./var/lib/whisparr/config
-    chown whisparr:whisparr ./var/lib/whisparr/config
+    chown 1000:1000 ./var/lib/whisparr/config
     mkdir -p ./var/lib/whisparr/data
-    chown whisparr:whisparr ./var/lib/whisparr/data
+    chown 1000:1000 ./var/lib/whisparr/data
   '';
 }
