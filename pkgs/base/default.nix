@@ -9,9 +9,9 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = "Niximgs base image";
       "org.opencontainers.image.licenses" = pkgs.lib.licenses.asl20.spdxId;
     };
+    User = "1000:1000";
   };
   contents = [
     pkgs.dockerTools.caCertificates
   ];
-  config.User = "1000:1000";
 }

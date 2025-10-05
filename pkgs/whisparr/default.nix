@@ -18,9 +18,11 @@ pkgs.dockerTools.buildLayeredImage {
       "6969/tcp" = { }; # Web UI
     };
     Labels = {
+      "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.whisparr.meta.description;
       "org.opencontainers.image.licenses" = pkgs.whisparr.meta.license.spdxId;
     };
+    User = "1000:1000";
   };
   contents = [
     pkgs.dockerTools.fakeNss
