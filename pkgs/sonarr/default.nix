@@ -1,6 +1,5 @@
 { base, pkgs }:
 
-
 pkgs.dockerTools.buildLayeredImage {
   name = "sonarr";
   tag = pkgs.sonarr.version;

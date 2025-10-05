@@ -1,6 +1,5 @@
 { base, pkgs }:
 
-
 pkgs.dockerTools.buildLayeredImage {
   name = "radarr";
   tag = pkgs.radarr.version;
