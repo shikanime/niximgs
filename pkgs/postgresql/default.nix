@@ -18,12 +18,18 @@ pkgs.dockerTools.buildLayeredImage {
       "POSTGRES_PASSWORD=postgres"
       "PGDATA=/var/lib/postgresql/data"
     ];
+    User = "postgres";
     Labels = {
       "org.opencontainers.image.description" = pkgs.postgresql.meta.description;
       "org.opencontainers.image.licenses" = pkgs.postgresql.meta.license.spdxId;
     };
   };
-  extraCommands = ''
-    mkdir -p var/lib/postgresql/data
+  runAsRoot = ''
+    #!${pkgs.runtimeShell}
+    ${pkgs.dockerTools.shadowSetup}
+    groupadd -r postgres
+    useradd -r -g postgres postgres
+    mkdir /var/lib/postgresql
+    chown postgres:postgres /var/lib/postgresql
   '';
 }

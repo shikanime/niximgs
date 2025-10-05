@@ -29,7 +29,4 @@ pkgs.dockerTools.buildLayeredImage {
   contents = [
     pkgs.dockerTools.fakeNss
   ];
-  extraCommands = ''
-    mkdir -p tmp var/lib/jellyfin var/lib/jellyfin/config var/lib/jellyfin/log var/cache/jellyfin
-  '';
 }
