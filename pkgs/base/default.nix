@@ -12,6 +12,6 @@ pkgs.dockerTools.buildLayeredImage {
   };
   contents = [
     pkgs.dockerTools.caCertificates
-  ]
+  ];
   config.User = "1000:1000";
 }
