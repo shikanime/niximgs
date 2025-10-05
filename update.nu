@@ -1,32 +1,24 @@
 #!/usr/bin/env nix
 #! nix develop --impure --command nu
 
+def get_flake_packages []: nothing -> list {
+    nix flake show --impure --json --all-systems
+    | from json
+    | get packages
+    | transpose system packages
+    | each { |item|
+        $item.packages | transpose name info | get name
+    }
+    | flatten
+    | uniq
+    | where $it not-in ["devenv-test", "devenv-up"]
+    | sort
+}
+
 def update_skaffold_artifacts [] {
     print "[skaffold] Updating skaffold.yaml with nix flake packages..."
-
-    # Get packages from nix flake
-    let packages = (
-        nix flake show --impure --json --all-systems
-        | from json
-        | get packages
-    )
-
-    # Extract package names for each system
-    let packages = (
-        $packages
-        | transpose system packages
-        | each { |item|
-            $item.packages | transpose name info | get name
-        }
-        | flatten
-        | uniq
-        | where $it not-in ["devenv-test", "devenv-up"]
-        | sort
-    )
-
+    let packages = get_flake_packages
     print $"[skaffold] Found packages: ($packages | str join ', ')"
-
-    # Update only the build.artifacts section
     open $"($env.FILE_PWD)/skaffold.yaml"
     | upsert build.artifacts (
         $packages | each { |pkg|
