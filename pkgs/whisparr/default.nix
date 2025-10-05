@@ -25,7 +25,8 @@ pkgs.dockerTools.buildLayeredImage {
   contents = [
     pkgs.dockerTools.fakeNss
   ];
-  extraCommands = ''
-    mkdir -p var/lib/whisparr
+  fakeRootCommands = ''
+    mkdir -p ./var/lib/whisparr
+    chown 1000:1000 ./var/lib/whisparr
   '';
 }

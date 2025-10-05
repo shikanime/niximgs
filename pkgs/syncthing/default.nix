@@ -26,7 +26,10 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.licenses" = pkgs.syncthing.meta.license.spdxId;
     };
   };
-  extraCommands = ''
-    mkdir -p var/lib/syncthing/config var/lib/syncthing/data
+  fakeRootCommands = ''
+    mkdir -p ./var/lib/syncthing/config
+    chown 1000:1000 ./var/lib/syncthing/config
+    mkdir -p ./var/lib/syncthing/data
+    chown 1000:1000 ./var/lib/syncthing/data
   '';
 }

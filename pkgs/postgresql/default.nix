@@ -18,7 +18,6 @@ pkgs.dockerTools.buildLayeredImage {
       "POSTGRES_PASSWORD=postgres"
       "PGDATA=/var/lib/postgresql/data"
     ];
-    User = "1000:1000";
     Labels = {
       "org.opencontainers.image.description" = pkgs.postgresql.meta.description;
       "org.opencontainers.image.licenses" = pkgs.postgresql.meta.license.spdxId;
