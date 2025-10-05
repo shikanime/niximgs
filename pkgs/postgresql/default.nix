@@ -9,15 +9,12 @@ pkgs.dockerTools.buildLayeredImage {
     Entrypoint = [
       "${pkgs.postgresql}/bin/postgres"
     ];
+    Env = [
+      "PGDATA=/var/lib/postgresql/data/${pkgs.postgresql.psqlSchema}"
+    ];
     ExposedPorts = {
       "5432/tcp" = { }; # PostgreSQL default port
     };
-    Env = [
-      "POSTGRES_DB=postgres"
-      "POSTGRES_USER=postgres"
-      "POSTGRES_PASSWORD=postgres"
-      "PGDATA=/var/lib/postgresql/data/${pkgs.postgresql.psqlSchema}"
-    ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.postgresql.meta.description;
@@ -25,6 +22,9 @@ pkgs.dockerTools.buildLayeredImage {
     };
     User = "1000:1000";
   };
+  contents = [
+    pkgs.postgresql
+  ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/postgresql/data/${pkgs.postgresql.psqlSchema}
     chown 1000:1000 ./var/lib/postgresql/data/${pkgs.postgresql.psqlSchema}

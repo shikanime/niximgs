@@ -21,6 +21,7 @@ pkgs.dockerTools.buildLayeredImage {
   };
   contents = [
     pkgs.dockerTools.fakeNss
+    pkgs.redis
   ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/redis

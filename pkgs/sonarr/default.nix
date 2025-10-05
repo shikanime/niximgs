@@ -6,13 +6,13 @@ pkgs.dockerTools.buildLayeredImage {
   fromImage = base;
 
   config = {
-    Entrypoint = [
-      "${pkgs.sonarr}/bin/Sonarr"
-    ];
     Cmd = [
       "-nobrowser"
       "-data"
       "/var/lib/sonarr/data"
+    ];
+    Entrypoint = [
+      "${pkgs.sonarr}/bin/Sonarr"
     ];
     ExposedPorts = {
       "8989/tcp" = { }; # Web UI
@@ -29,6 +29,7 @@ pkgs.dockerTools.buildLayeredImage {
   };
   contents = [
     pkgs.dockerTools.fakeNss
+    pkgs.sonarr
   ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/sonarr/config

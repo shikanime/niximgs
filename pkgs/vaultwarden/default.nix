@@ -9,6 +9,10 @@ pkgs.dockerTools.buildLayeredImage {
     Entrypoint = [
       "${pkgs.vaultwarden}/bin/vaultwarden"
     ];
+    Env = [
+      "ROCKET_ADDRESS=0.0.0.0"
+      "ROCKET_PORT=80"
+    ];
     ExposedPorts = {
       "80/tcp" = { }; # Vaultwarden default port
     };
@@ -17,12 +21,11 @@ pkgs.dockerTools.buildLayeredImage {
       "org.opencontainers.image.description" = pkgs.vaultwarden.meta.description;
       "org.opencontainers.image.licenses" = pkgs.vaultwarden.meta.license.spdxId;
     };
-    Env = [
-      "ROCKET_ADDRESS=0.0.0.0"
-      "ROCKET_PORT=80"
-    ];
     User = "1000:1000";
   };
+  contents = [
+    pkgs.vaultwarden
+  ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/vaultwarden
     chown 1000:1000 ./var/lib/vaultwarden

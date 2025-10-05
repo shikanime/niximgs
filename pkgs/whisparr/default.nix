@@ -6,20 +6,20 @@ pkgs.dockerTools.buildLayeredImage {
   fromImage = base;
 
   config = {
-    Entrypoint = [
-      "${pkgs.whisparr}/bin/Whisparr"
-    ];
     Cmd = [
       "-nobrowser"
       "-data"
       "/var/lib/whisparr/data"
     ];
-    ExposedPorts = {
-      "6969/tcp" = { }; # Web UI
-    };
+    Entrypoint = [
+      "${pkgs.whisparr}/bin/Whisparr"
+    ];
     Env = [
       "XDG_CONFIG_HOME=/var/lib/whisparr/config"
     ];
+    ExposedPorts = {
+      "6969/tcp" = { }; # Web UI
+    };
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.whisparr.meta.description;
@@ -29,6 +29,7 @@ pkgs.dockerTools.buildLayeredImage {
   };
   contents = [
     pkgs.dockerTools.fakeNss
+    pkgs.whisparr
   ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/whisparr/config

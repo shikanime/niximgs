@@ -9,16 +9,16 @@ pkgs.dockerTools.buildLayeredImage {
     Entrypoint = [
       "${pkgs.jellyfin}/bin/jellyfin"
     ];
+    Env = [
+      "JELLYFIN_DATA_DIR=/var/lib/jellyfin"
+      "JELLYFIN_CACHE_DIR=/var/cache/jellyfin"
+    ];
     ExposedPorts = {
       "8096/tcp" = { }; # HTTP Web UI
       "8920/tcp" = { }; # HTTPS Web UI (optional)
       "1900/udp" = { }; # DLNA discovery
       "7359/udp" = { }; # Auto-discovery
     };
-    Env = [
-      "JELLYFIN_DATA_DIR=/var/lib/jellyfin"
-      "JELLYFIN_CACHE_DIR=/var/cache/jellyfin"
-    ];
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.jellyfin.meta.description;
@@ -28,6 +28,7 @@ pkgs.dockerTools.buildLayeredImage {
   };
   contents = [
     pkgs.dockerTools.fakeNss
+    pkgs.jellyfin
   ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/jellyfin

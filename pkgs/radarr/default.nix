@@ -6,20 +6,20 @@ pkgs.dockerTools.buildLayeredImage {
   fromImage = base;
 
   config = {
-    Entrypoint = [
-      "${pkgs.radarr}/bin/Radarr"
-    ];
     Cmd = [
       "-nobrowser"
       "-data"
       "/var/lib/radarr/data"
     ];
-    ExposedPorts = {
-      "7878/tcp" = { }; # Web UI
-    };
+    Entrypoint = [
+      "${pkgs.radarr}/bin/Radarr"
+    ];
     Env = [
       "XDG_CONFIG_HOME=/var/lib/radarr/config"
     ];
+    ExposedPorts = {
+      "7878/tcp" = { }; # Web UI
+    };
     Labels = {
       "org.opencontainers.image.source" = "https://github.com/shikanime/niximgs";
       "org.opencontainers.image.description" = pkgs.radarr.meta.description;
@@ -29,6 +29,7 @@ pkgs.dockerTools.buildLayeredImage {
   };
   contents = [
     pkgs.dockerTools.fakeNss
+    pkgs.radarr
   ];
   fakeRootCommands = ''
     mkdir -p ./var/lib/radarr/config
