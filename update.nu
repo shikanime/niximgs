@@ -32,7 +32,19 @@ def update_skaffold_artifacts []: record -> record {
 }
 
 # Update gitignore
-gitnr create repo:github/gitignore/refs/heads/main/Nix.gitignore repo:shikanime/gitignore/refs/heads/main/Devenv.gitignore tt:jetbrains+all tt:linux tt:macos tt:terraform tt:vim tt:visualstudiocode tt:windows | save --force .gitignore
+(
+    gitnr create
+        repo:github/gitignore/refs/heads/main/Nix.gitignore
+        repo:shikanime/gitignore/refs/heads/main/Devenv.gitignore
+        tt:jetbrains+all
+        tt:linux
+        tt:macos
+        tt:terraform
+        tt:vim
+        tt:visualstudiocode
+        tt:windows
+    | save --force .gitignore
+)
 
 # Update skaffold.yaml with nix packages
 open $"($env.FILE_PWD)/skaffold.yaml"
