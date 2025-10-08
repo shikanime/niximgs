@@ -43,7 +43,7 @@ def update_skaffold_artifacts []: record -> record {
         tt:vim
         tt:visualstudiocode
         tt:windows
-        | save --force .gitignore
+    | save --force .gitignore
 )
 
 # Update skaffold.yaml with nix packages
