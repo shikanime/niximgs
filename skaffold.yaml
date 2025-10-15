@@ -1,7 +1,7 @@
 apiVersion: skaffold/v4beta9
 kind: Config
 metadata:
-  name: shikanime
+  name: niximgs
 build:
   artifacts:
     - image: ghcr.io/shikanime/niximgs/base
