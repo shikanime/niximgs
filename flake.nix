@@ -68,6 +68,7 @@
                 pkgs.gh
                 pkgs.gitnr
                 pkgs.nushell
+                pkgs.sapling
                 pkgs.skaffold
               ];
             };
@@ -76,6 +77,13 @@
               packages = [
                 pkgs.nushell
                 pkgs.skaffold
+              ];
+            };
+            update = {
+              containers = pkgs.lib.mkForce { };
+              packages = [
+                pkgs.gh
+                pkgs.sapling
               ];
             };
           };
