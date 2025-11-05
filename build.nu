@@ -34,8 +34,7 @@ def format_arch []: string -> string {
 }
 
 def format_image [ctx: record, platform: record]: nothing -> string {
-    let formatted_arch = $platform.arch | format_arch
-    $"($ctx.image)-($formatted_arch)"
+    $"($ctx.image)-($platform.arch)"
 }
 
 def format_nix_flake [ctx: record, image: string, platform: record]: nothing -> string {
@@ -49,7 +48,7 @@ def get_platforms []: nothing -> string {
         print $"No PLATFORMS specified, detected host platform: ($detected)"
         $detected
     } else {
-        $env.PLATFORMS
+        $env.PLATFORMS | split row ","
     }
 }
 
@@ -112,8 +111,8 @@ def build_platform_image [ctx: record]: string -> record {
 
     let flake_url = format_nix_flake $ctx $image $platform
     let loaded_image = $flake_url | build_flake | load_docker_image
-
     let image = format_image $ctx $platform
+
     docker tag $loaded_image $image
 
     {name: $image, platform: $platform}
@@ -123,19 +122,6 @@ def push_image [ctx: record]: record -> nothing {
     if $ctx.push_image {
         docker push $in.name
     }
-}
-
-def build_all_platform_images [ctx: record]: nothing -> list<record> {
-    $ctx.platforms
-        | split row ","
-        | par-each { |platform|
-            $platform | build_platform_image $ctx
-        }
-}
-
-def push_all_images [ctx: record, images: list<record>]: nothing -> list<nothing> {
-    $images
-    | par-each { |image| $image | push_image $ctx }
 }
 
 def remove_manifest [ctx: record]: nothing -> nothing {
@@ -166,8 +152,8 @@ def push_manifest [ctx: record]: nothing -> nothing {
 }
 
 def build_multiplatform_image [ctx: record]: nothing -> nothing {
-    let images = build_all_platform_images $ctx
-    push_all_images $ctx $images
+    let images = $ctx.platforms | each { |platform| $platform | build_platform_image $ctx }
+    $images | par-each { |image| $image | push_image $ctx }
     create_manifest $ctx $images
     push_manifest $ctx
 }
