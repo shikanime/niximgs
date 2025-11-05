@@ -75,7 +75,7 @@
               containers = pkgs.lib.mkForce { };
               packages = [
                 pkgs.nushell
-                pkgs.nushell
+                pkgs.skaffold
               ];
             };
           };
