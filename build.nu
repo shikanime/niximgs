@@ -152,7 +152,7 @@ def push_manifest [ctx: record]: nothing -> nothing {
 }
 
 def build_multiplatform_image [ctx: record]: nothing -> nothing {
-    let images = $ctx.platforms | each { |platform| $platform | build_platform_image $ctx }
+    let images = $ctx.platforms | par-each { |platform| $platform | build_platform_image $ctx }
     $images | par-each { |image| $image | push_image $ctx }
     create_manifest $ctx $images
     push_manifest $ctx
