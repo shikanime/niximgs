@@ -79,13 +79,6 @@
                 pkgs.skaffold
               ];
             };
-            update = {
-              containers = pkgs.lib.mkForce { };
-              packages = [
-                pkgs.gh
-                pkgs.sapling
-              ];
-            };
           };
           packages = {
             base = pkgs.callPackage ./pkgs/base { };
