@@ -33,7 +33,6 @@ jobs:
     strategy:
       matrix:
         image:
-          - base
           - jellyfin
           - mlflow
           - postgresql
@@ -68,7 +67,6 @@ jobs:
     strategy:
       matrix:
         image:
-          - base
           - jellyfin
           - mlflow
           - postgresql
