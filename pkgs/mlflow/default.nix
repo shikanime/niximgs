@@ -1,6 +1,6 @@
 { base, pkgs }:
 
-pkgs.dockerTools.buildLayeredImage {
+pkgs.dockerTools.streamLayeredImage {
   name = "mlflow";
   tag = pkgs.mlflow-server.version;
   fromImage = base;

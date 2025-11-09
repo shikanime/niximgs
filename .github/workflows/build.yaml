@@ -1,0 +1,78 @@
+name: Build
+on:
+  workflow_run:
+    workflows:
+      - check
+    branches:
+      - main
+    types:
+      - completed
+jobs:
+  build-amd64:
+    runs-on: ubuntu-24.04
+    steps:
+      - id: createGithubAppToken
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.OPERATOR_APP_ID }}
+          private-key: ${{ secrets.OPERATOR_PRIVATE_KEY }}
+      - uses: actions/checkout@v5
+        with:
+          token: ${{ steps.createGithubAppToken.outputs.token }}
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ vars.OPERATOR_APP_ID }}
+          password: ${{ steps.createGithubAppToken.outputs.token }}
+      - uses: shikanime-studio/setup-nix-action@v1
+        with:
+          github-token: ${{ steps.createGithubAppToken.outputs.token }}
+      - run: |
+          nix develop --accept-flake-config --impure .#build --command skaffold \
+            build --platform linux/amd64
+    strategy:
+      matrix:
+        image:
+          - jellyfin
+          - mlflow
+          - postgresql
+          - radarr
+          - redis
+          - sonarr
+          - syncthing
+          - vaultwarden
+          - whisparr
+  build-arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - id: createGithubAppToken
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.OPERATOR_APP_ID }}
+          private-key: ${{ secrets.OPERATOR_PRIVATE_KEY }}
+      - uses: actions/checkout@v5
+        with:
+          token: ${{ steps.createGithubAppToken.outputs.token }}
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ vars.OPERATOR_APP_ID }}
+          password: ${{ steps.createGithubAppToken.outputs.token }}
+      - uses: shikanime-studio/setup-nix-action@v1
+        with:
+          github-token: ${{ steps.createGithubAppToken.outputs.token }}
+      - run: |
+          nix develop --accept-flake-config --impure .#build --command skaffold \
+            build --platform linux/arm64
+    strategy:
+      matrix:
+        image:
+          - jellyfin
+          - mlflow
+          - postgresql
+          - radarr
+          - redis
+          - sonarr
+          - syncthing
+          - vaultwarden
+          - whisparr
