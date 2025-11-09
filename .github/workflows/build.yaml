@@ -31,6 +31,7 @@ jobs:
           nix develop --accept-flake-config --impure .#build --command skaffold \
             build --platform linux/amd64
     strategy:
+      fail-fast: false
       matrix:
         image:
           - jellyfin
@@ -65,6 +66,7 @@ jobs:
           nix develop --accept-flake-config --impure .#build --command skaffold \
             build --platform linux/arm64
     strategy:
+      fail-fast: false
       matrix:
         image:
           - jellyfin
