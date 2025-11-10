@@ -9,6 +9,8 @@ on:
       - completed
 jobs:
   build-amd64:
+    permissions:
+      packages: write
     runs-on: ubuntu-24.04
     steps:
       - id: createGithubAppToken
@@ -44,6 +46,8 @@ jobs:
           - vaultwarden
           - whisparr
   build-arm64:
+    permissions:
+      packages: write
     runs-on: ubuntu-24.04-arm
     steps:
       - id: createGithubAppToken
