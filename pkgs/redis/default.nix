@@ -1,6 +1,6 @@
 { base, pkgs }:
 
-pkgs.dockerTools.streamLayeredImage {
+pkgs.dockerTools.buildLayeredImage {
   name = "redis";
   tag = pkgs.redis.version;
   fromImage = base;
