@@ -107,7 +107,6 @@ jobs:
         with:
           github-token: ${{ steps.createGithubAppToken.outputs.token }}
       - run: |
-      - run: |
           nix develop --accept-flake-config --impure .#build --command \
             docker manifest create ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha }} \
               ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha }}_linux_amd64 \
