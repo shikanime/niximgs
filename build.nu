@@ -34,7 +34,7 @@ def format_arch []: string -> string {
 }
 
 def format_image [ctx: record, platform: record]: nothing -> string {
-    $"($ctx.image)-($platform.arch)"
+    $"($ctx.image)_$($platform.os)_$($platform.arch)"
 }
 
 def format_nix_flake [ctx: record, image: string, platform: record]: nothing -> string {
