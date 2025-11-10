@@ -138,12 +138,10 @@ def annotate_manifest [ctx: record, image: record]: nothing -> nothing {
 }
 
 def create_manifest [ctx: record, images: list<record>]: nothing -> nothing {
-    if ($images | length) > 0 {
-        print $"Creating manifest for ($ctx.image)..."
-        remove_manifest $ctx
-        docker manifest create $ctx.image ...($images | get name)
-        $images | par-each { |image| annotate_manifest $ctx $image }
-    }
+    print $"Creating manifest for ($ctx.image)..."
+    remove_manifest $ctx
+    docker manifest create $ctx.image ...($images | get name)
+    $images | par-each { |image| annotate_manifest $ctx $image }
 }
 
 def push_manifest [ctx: record]: nothing -> nothing {
@@ -163,7 +161,7 @@ def build_and_push_image [ctx: record]: nothing -> nothing {
     let platform = $ctx.platforms | first | parse_platform
     let image = $ctx.image | parse_image
     let loaded_image = $image | build_image $ctx $platform
-    {name: $ctx.image, platform: $platform, path: $loaded_image} | push_image $ctx
+    {name: $ctx.image, path: $loaded_image} | push_image $ctx
 }
 
 def build [ctx: record]: nothing -> nothing {
