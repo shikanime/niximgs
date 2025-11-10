@@ -34,7 +34,7 @@ def format_arch []: string -> string {
 }
 
 def format_platform_image [ctx: record, platform: record]: nothing -> string {
-    $"($ctx.image)_$($platform.os)_$($platform.arch)"
+    $"($ctx.image)_($platform.os)_($platform.arch)"
 }
 
 def format_nix_flake [ctx: record, image: string, platform: record]: nothing -> string {
@@ -121,7 +121,7 @@ def build_platform_image [ctx: record]: string -> record {
 
 def push_image [ctx: record]: record -> nothing {
     if $ctx.push_image {
-        skopeo copy docker-archive:($in.path) docker://($in.name)
+        skopeo copy $"docker-archive:($in.path)" $"docker://($in.name)"
     }
 }
 
