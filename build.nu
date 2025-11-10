@@ -121,7 +121,7 @@ def build_platform_image [ctx: record]: string -> record {
 
 def push_image [ctx: record]: record -> nothing {
     if $ctx.push_image {
-        skopeo copy $"docker-archive:($in.path)" $"docker://($in.name)"
+        skopeo copy docker-archive:($in.path) docker://($in.name)
     }
 }
 
