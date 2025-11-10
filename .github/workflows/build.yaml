@@ -103,13 +103,15 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set short SHA
+        run: echo "sha_short=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
       - run: |
-          docker pull ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }}_linux_amd64
-          docker pull ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }}_linux_arm64
-          docker manifest create ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }} \
-            ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }}_linux_amd64 \
-            ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }}_linux_arm64
-          docker manifest push ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }}
+          docker pull ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ env.sha_short }}_linux_amd64
+          docker pull ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ env.sha_short }}_linux_arm64
+          docker manifest create ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ env.sha_short }} \
+            ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ env.sha_short }}_linux_amd64 \
+            ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ env.sha_short }}_linux_arm64
+          docker manifest push ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ env.sha_short }}
     strategy:
       fail-fast: false
       matrix:
