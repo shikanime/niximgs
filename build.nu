@@ -70,7 +70,7 @@ def get_skaffold_context []: nothing -> record {
 }
 
 def load_docker_image []: string -> string {
-    let docker_load_result: string = run-external $in | docker image load | str trim
+    let docker_load_result: string = docker load -i $in | str trim
 
     # Try to parse "Loaded image:" format first
     let loaded_images = $docker_load_result | parse "Loaded image: {image}"
