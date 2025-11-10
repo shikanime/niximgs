@@ -8,7 +8,7 @@ on:
     types:
       - completed
 jobs:
-  build-amd64:
+  build-linux-amd64:
     permissions:
       packages: write
     runs-on: ubuntu-24.04
@@ -45,7 +45,7 @@ jobs:
           - syncthing
           - vaultwarden
           - whisparr
-  build-arm64:
+  build-linux-arm-64:
     permissions:
       packages: write
     runs-on: ubuntu-24.04-arm
@@ -69,6 +69,51 @@ jobs:
       - run: |
           nix develop --accept-flake-config --impure .#build --command skaffold \
             build --platform linux/arm64
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - jellyfin
+          - mlflow
+          - postgresql
+          - radarr
+          - redis
+          - sonarr
+          - syncthing
+          - vaultwarden
+          - whisparr
+  build:
+    needs:
+      - build-linux-amd64
+      - build-linux-arm-64
+    permissions:
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - id: createGithubAppToken
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.OPERATOR_APP_ID }}
+          private-key: ${{ secrets.OPERATOR_PRIVATE_KEY }}
+      - uses: actions/checkout@v5
+        with:
+          token: ${{ steps.createGithubAppToken.outputs.token }}
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: shikanime-studio/setup-nix-action@v1
+        with:
+          github-token: ${{ steps.createGithubAppToken.outputs.token }}
+      - run: |
+      - run: |
+          nix develop --accept-flake-config --impure .#build --command \
+            docker manifest create ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha }} \
+              ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha }}_linux_amd64 \
+              ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha }}_linux_arm64
+          nix develop --accept-flake-config --impure .#build --command \
+            docker manifest push ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha }}
     strategy:
       fail-fast: false
       matrix:
