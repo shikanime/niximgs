@@ -106,24 +106,22 @@ def build_flake []: string -> string {
 def build_image [ctx: record, platform: record]: string -> string {
     print $"Building ($in) for ($platform.os)/($platform.arch)..."
     let flake_url = format_nix_flake $ctx $in $platform
-    $flake_url | build_flake | load_docker_image
+    $flake_url | build_flake
 }
 
 def build_platform_image [ctx: record]: string -> record {
     let platform = $in | parse_platform
     let image = $ctx.image | parse_image
 
-    let loaded_image = $image | build_image $ctx $platform
+    let path = $image | build_image $ctx $platform
     let formatted_image = format_platform_image $ctx $platform
 
-    docker tag $loaded_image $formatted_image
-
-    {name: $formatted_image, platform: $platform}
+    {name: $formatted_image, platform: $platform, path: $path}
 }
 
 def push_image [ctx: record]: record -> nothing {
     if $ctx.push_image {
-        docker push $in.name
+        skopeo copy $"docker-archive:($in.path)" $"docker://($in.name)"
     }
 }
 
@@ -165,10 +163,7 @@ def build_and_push_image [ctx: record]: nothing -> nothing {
     let platform = $ctx.platforms | first | parse_platform
     let image = $ctx.image | parse_image
     let loaded_image = $image | build_image $ctx $platform
-
-    docker tag $loaded_image $ctx.image
-
-    $ctx.image | push_image $ctx
+    {name: $ctx.image, platform: $platform, path: $loaded_image} | push_image $ctx
 }
 
 def build [ctx: record]: nothing -> nothing {

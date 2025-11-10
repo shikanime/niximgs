@@ -72,6 +72,7 @@
                 pkgs.nushell
                 pkgs.sapling
                 pkgs.skaffold
+                pkgs.skopeo
               ];
             };
             build = {
@@ -79,6 +80,7 @@
               packages = [
                 pkgs.nushell
                 pkgs.skaffold
+                pkgs.skopeo
               ];
             };
           };
