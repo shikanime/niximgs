@@ -103,16 +103,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: shikanime-studio/setup-nix-action@v1
-        with:
-          github-token: ${{ steps.createGithubAppToken.outputs.token }}
       - run: |
-          nix develop --accept-flake-config --impure .#build --command \
-            docker manifest create ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha }} \
-              ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha }}_linux_amd64 \
-              ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha }}_linux_arm64
-          nix develop --accept-flake-config --impure .#build --command \
-            docker manifest push ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha }}
+          docker pull ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }}_linux_amd64
+          docker pull ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }}_linux_arm64
+          docker manifest create ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }} \
+            ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }}_linux_amd64 \
+            ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }}_linux_arm64
+          docker manifest push ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ github.sha_short }}
     strategy:
       fail-fast: false
       matrix:
