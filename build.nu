@@ -33,7 +33,7 @@ def format_arch []: string -> string {
     }
 }
 
-def format_image [ctx: record, platform: record]: nothing -> string {
+def format_platform_image [ctx: record, platform: record]: nothing -> string {
     $"($ctx.image)_$($platform.os)_$($platform.arch)"
 }
 
@@ -103,19 +103,22 @@ def build_flake []: string -> string {
     nix build --accept-flake-config --print-out-paths $in | str trim
 }
 
+def build_image [ctx: record, platform: record]: string -> string {
+    print $"Building ($in) for ($platform.os)/($platform.arch)..."
+    let flake_url = format_nix_flake $ctx $in $platform
+    $flake_url | build_flake | load_docker_image
+}
+
 def build_platform_image [ctx: record]: string -> record {
     let platform = $in | parse_platform
     let image = $ctx.image | parse_image
 
-    print $"Building ($image) for ($in)..."
+    let loaded_image = $image | build_image $ctx $platform
+    let formatted_image = format_platform_image $ctx $platform
 
-    let flake_url = format_nix_flake $ctx $image $platform
-    let loaded_image = $flake_url | build_flake | load_docker_image
-    let image = format_image $ctx $platform
+    docker tag $loaded_image $formatted_image
 
-    docker tag $loaded_image $image
-
-    {name: $image, platform: $platform}
+    {name: $formatted_image, platform: $platform}
 }
 
 def push_image [ctx: record]: record -> nothing {
@@ -151,11 +154,29 @@ def push_manifest [ctx: record]: nothing -> nothing {
     }
 }
 
-def build_multiplatform_image [ctx: record]: nothing -> nothing {
+def build_and_push_multiplatform_image [ctx: record]: nothing -> nothing {
     let images = $ctx.platforms | par-each { |platform| $platform | build_platform_image $ctx }
     $images | par-each { |image| $image | push_image $ctx }
     create_manifest $ctx $images
     push_manifest $ctx
 }
 
-build_multiplatform_image (get_skaffold_context)
+def build_and_push_image [ctx: record]: nothing -> nothing {
+    let platform = $ctx.platforms | first | parse_platform
+    let image = $ctx.image | parse_image
+    let loaded_image = $image | build_image $ctx $platform
+
+    docker tag $loaded_image $ctx.image
+
+    $ctx.image | push_image $ctx
+}
+
+def build [ctx: record]: nothing -> nothing {
+    if (($ctx.platforms | length) == 1) {
+        build_and_push_image $ctx
+    } else {
+        build_and_push_multiplatform_image $ctx
+    }
+}
+
+build (get_skaffold_context)
