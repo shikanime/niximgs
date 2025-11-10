@@ -31,7 +31,7 @@ jobs:
           github-token: ${{ steps.createGithubAppToken.outputs.token }}
       - run: |
           nix develop --accept-flake-config --impure .#build --command skaffold \
-            build --platform linux/amd64
+            build --build-image ${{ matrix.image }} --platform linux/amd64
     strategy:
       fail-fast: false
       matrix:
@@ -68,7 +68,7 @@ jobs:
           github-token: ${{ steps.createGithubAppToken.outputs.token }}
       - run: |
           nix develop --accept-flake-config --impure .#build --command skaffold \
-            build --platform linux/arm64
+            build --build-image ${{ matrix.image }} --platform linux/arm64
     strategy:
       fail-fast: false
       matrix:
