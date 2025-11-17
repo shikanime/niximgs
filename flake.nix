@@ -43,7 +43,7 @@
           devenv.shells = {
             default = {
               imports = [
-
+                devlib.flakeModules.shikanime-studio
               ];
               packages = [
                 pkgs.buildah
