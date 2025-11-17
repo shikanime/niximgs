@@ -43,7 +43,7 @@
           devenv.shells = {
             default = {
               imports = [
-                devlib.flakeModules.shikanime-studio
+                devlib.devenvModules.shikanime-studio
               ];
               packages = [
                 pkgs.buildah
@@ -53,7 +53,7 @@
                 pkgs.skaffold
                 pkgs.skopeo
               ];
-          treefmt.enable = true;
+              treefmt.enable = true;
             };
             build = {
               containers = pkgs.lib.mkForce { };
