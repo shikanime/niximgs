@@ -1,7 +1,9 @@
 {
   inputs = {
     devenv.url = "github:cachix/devenv";
+    devlib.url = "github:shikanime-studio/devlib";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    git-hooks.url = "github:cachix/git-hooks.nix";
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
   };
@@ -22,61 +24,41 @@
   outputs =
     inputs@{
       devenv,
+      devlib,
       flake-parts,
+      git-hooks,
       treefmt-nix,
       ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         devenv.flakeModule
+        devlib.flakeModule
+        git-hooks.flakeModule
         treefmt-nix.flakeModule
       ];
       perSystem =
         { self', pkgs, ... }:
         {
-          treefmt = {
-            projectRootFile = "flake.nix";
-            enableDefaultExcludes = true;
-            programs = {
-              hclfmt.enable = true;
-              nixfmt.enable = true;
-              prettier.enable = true;
-              shfmt.enable = true;
-              statix.enable = true;
-              terraform.enable = true;
-            };
-            settings.global.excludes = [
-              "*.excalidraw"
-              "*.terraform.lock.hcl"
-              ".gitattributes"
-              "LICENSE"
-            ];
-          };
           devenv.shells = {
             default = {
-              containers = pkgs.lib.mkForce { };
-              languages.nix.enable = true;
-              cachix = {
-                enable = true;
-                push = "shikanime";
-              };
-              git-hooks.hooks = {
-                actionlint.enable = true;
-                deadnix.enable = true;
-                flake-checker.enable = true;
-                shellcheck.enable = true;
-              };
+              imports = [
+
+              ];
               packages = [
+                pkgs.buildah
                 pkgs.gh
                 pkgs.nushell
                 pkgs.sapling
                 pkgs.skaffold
                 pkgs.skopeo
               ];
+          treefmt.enable = true;
             };
             build = {
               containers = pkgs.lib.mkForce { };
               packages = [
+                pkgs.buildah
                 pkgs.nushell
                 pkgs.skaffold
                 pkgs.skopeo
