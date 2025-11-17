@@ -1,5 +1,5 @@
 #!/usr/bin/env nix
-#! nix develop --impure --command nu
+#! nix shell nixpkgs#buildah nixpkgs#nushell nixpkgs#skopeo --command nu
 
 def detect_host_arch []: nothing -> string {
     let arch: string = uname | get machine
@@ -20,8 +20,9 @@ def parse_platform []: string -> record {
     {os: ($parts | get 0), arch: ($parts | get 1)}
 }
 
-def parse_image []: string -> string {
-    $in | split row "/" | last | split row ":" | get 0
+def parse_image []: string -> record {
+    let parts = $in | split row "/" | last | split row ":"
+    {image: ($parts | get 0), tag: ($parts | get 1)}
 }
 
 def format_arch []: string -> string {
@@ -37,9 +38,10 @@ def format_platform_image [ctx: record, platform: record]: nothing -> string {
     $"($ctx.image)_($platform.os)_($platform.arch)"
 }
 
-def format_nix_flake [ctx: record, image: string, platform: record]: nothing -> string {
+def format_nix_flake [ctx: record, platform: record]: nothing -> string {
     let formatted_arch = $platform.arch | format_arch
-    $"($ctx.build_context)#packages.($formatted_arch)-($platform.os).($image)"
+    let formatted_image = $ctx.image | parse_image
+    $"($ctx.build_context)#packages.($formatted_arch)-($platform.os).($formatted_image.image)"
 }
 
 def get_platforms []: nothing -> string {
@@ -69,102 +71,105 @@ def get_skaffold_context []: nothing -> record {
     $ctx
 }
 
-def load_docker_image []: string -> string {
-    let docker_load_result: string = docker load -i $in | str trim
-
-    # Try to parse "Loaded image:" format first
-    let loaded_images = $docker_load_result | parse "Loaded image: {image}"
-
-    let image: string = if ($loaded_images | length) > 0 {
-        $loaded_images | get image.0
-    } else {
-        # If that fails, try to parse the "already exists" format with more flexible regex
-        let existing_images = $docker_load_result | parse "The image {image} already exists"
-
-        if ($existing_images | length) > 0 {
-            $existing_images | get image.0
+def get_docker_host []: nothing -> string {
+    if ($env.DOCKER_HOST? | default "" | is-empty) {
+        if ("/var/run/docker.sock" | path exists) {
+            "unix:///var/run/docker.sock"
+        } else if ("$HOME/.docker/run/docker.sock" | path exists) {
+            $"unix://($env.HOME)/.docker/run/docker.sock"
+        } else if ($"/run/user/($env.USER_UID)/docker.sock" | path exists) {
+            $"unix:///run/user/($env.USER_UID)/docker.sock"
         } else {
-            # Try to extract image name from the beginning of "already exists" messages
-            let image_pattern = $docker_load_result | parse --regex 'The image (?P<image>\S+:\S+) already exists'
-
-            if ($image_pattern | length) > 0 {
-                $image_pattern | get image.0
-            } else {
-                print $"Error: Could not parse loaded image from Docker output: ($docker_load_result)"
-                exit 1
-            }
+            "unix:///var/run/docker.sock"
         }
+    } else {
+        $env.DOCKER_HOST
     }
-
-    $image
 }
 
 def build_flake []: string -> string {
     nix build --accept-flake-config --print-out-paths $in | str trim
 }
 
-def build_image [ctx: record, platform: record]: string -> string {
-    print $"Building ($in) for ($platform.os)/($platform.arch)..."
-    let flake_url = format_nix_flake $ctx $in $platform
-    $flake_url | build_flake
+def push_image_to_registry [docker_host: string, image: string]: string -> error {
+    (
+        skopeo copy
+            --dest-daemon-host $"($docker_host)"
+            $"docker-archive:/dev/stdin"
+            $"docker://($image)"
+    )
+}
+
+def push_image_to_docker_daemon [docker_host: string, image: string]: string -> error {
+    (
+        skopeo copy
+            --dest-daemon-host $"($docker_host)"
+            $"docker-archive:/dev/stdin"
+            $"docker-daemon:($image)"
+    )
+}
+
+def push_image [ctx: record, image: string]: string -> error {
+    let docker_host = get_docker_host
+    let image_stream = run-external $in
+    if $ctx.push_image {
+        image_stream | push_image_to_registry $docker_host $image
+    } else {
+        image_stream | push_image_to_docker_daemon $docker_host $image
+    }
 }
 
 def build_platform_image [ctx: record]: string -> record {
     let platform = $in | parse_platform
-    let image = $ctx.image | parse_image
-
-    let path = $image | build_image $ctx $platform
-    let formatted_image = format_platform_image $ctx $platform
-
-    {name: $formatted_image, platform: $platform, path: $path}
-}
-
-def push_image [ctx: record]: record -> nothing {
-    if $ctx.push_image {
-        skopeo copy $"docker-archive:($in.path)" $"docker://($in.name)"
-    }
+    let flake_url = format_nix_flake $ctx $platform
+    let image_name = format_platform_image $ctx $platform
+    $flake_url | build_flake | push_image $ctx $image_name
+    {name: $image_name, platform: $platform, flake: $flake_url}
 }
 
 def remove_manifest [ctx: record]: nothing -> nothing {
     try {
-        docker manifest rm $ctx.image
+        buildah manifest rm $ctx.image
     } catch { |err|
         print $"Manifest removal failed for ($ctx.image): ($err.msg)"
     }
 }
 
 def annotate_manifest [ctx: record, image: record]: nothing -> nothing {
-    docker manifest annotate $ctx.image $image.name --os $image.platform.os --arch $image.platform.arch
+    (
+        buildah manifest add
+            --os $image.platform.os
+            --arch $image.platform.arch
+            $ctx.image $"docker://($image.name)"
+    )
 }
 
 def create_manifest [ctx: record, images: list<record>]: nothing -> nothing {
     print $"Creating manifest for ($ctx.image)..."
     remove_manifest $ctx
-    docker manifest create $ctx.image ...($images | get name)
-    $images | par-each { |image| annotate_manifest $ctx $image }
+    buildah manifest create $ctx.image
+    $images | par-each { |image| annotate_manifest $ctx $image } | ignore
 }
 
-def push_manifest [ctx: record]: nothing -> nothing {
+def push_manifest [ctx: record]: nothing -> error {
     if $ctx.push_image {
-        docker manifest push $ctx.image
+        buildah manifest push --all $ctx.image $"docker://($ctx.image)"
     }
 }
 
-def build_and_push_multiplatform_image [ctx: record]: nothing -> nothing {
-    let images = $ctx.platforms | par-each { |platform| $platform | build_platform_image $ctx }
-    $images | par-each { |image| $image | push_image $ctx }
+def build_and_push_multiplatform_image [ctx: record]: nothing -> error {
+    let images: list<record> = $ctx.platforms | par-each { |platform| $platform | build_platform_image $ctx }
     create_manifest $ctx $images
     push_manifest $ctx
 }
 
-def build_and_push_image [ctx: record]: nothing -> nothing {
+def build_and_push_image [ctx: record]: nothing -> error {
     let platform = $ctx.platforms | first | parse_platform
-    let image = $ctx.image | parse_image
-    let loaded_image = $image | build_image $ctx $platform
-    {name: $ctx.image, path: $loaded_image} | push_image $ctx
+    let flake_url = format_nix_flake $ctx $platform
+    $flake_url | build_flake | push_image $ctx $ctx.image
 }
 
-def build [ctx: record]: nothing -> nothing {
+def build [ctx: record]: nothing -> error {
     if (($ctx.platforms | length) == 1) {
         build_and_push_image $ctx
     } else {
