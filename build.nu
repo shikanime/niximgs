@@ -112,7 +112,9 @@ def push_image_to_docker_daemon [image: string]: binary -> error {
 def push_image [ctx: record, image: string]: string -> error {
     let image_stream = run-external $in
     if $ctx.push_image {
-        $image_stream | push_image_to_registry $image
+        $image_stream
+        | tee { push_image_to_registry $image }
+        | push_image_to_docker_daemon $image
         } else {
         $image_stream | push_image_to_docker_daemon $image
     }
