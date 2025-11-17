@@ -30,6 +30,10 @@ jobs:
         with:
           github-token: ${{ steps.createGithubAppToken.outputs.token }}
       - run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" |
+            nix develop --accept-flake-config --impure .#build --command skopeo login ghcr.io \
+              --username ${{ github.actor }} \
+              --password-stdin
           nix develop --accept-flake-config --impure .#build --command skaffold \
             build --build-image ${{ matrix.image }} --platform linux/amd64,linux/arm64
     strategy:

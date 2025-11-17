@@ -1,6 +1,6 @@
 { base, pkgs }:
 
-pkgs.dockerTools.buildLayeredImage {
+pkgs.dockerTools.streamLayeredImage {
   name = "whisparr";
   tag = pkgs.whisparr.version;
   fromImage = base;
