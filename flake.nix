@@ -53,7 +53,6 @@
                 pkgs.skaffold
                 pkgs.skopeo
               ];
-              treefmt.enable = true;
             };
             build = {
               containers = pkgs.lib.mkForce { };
