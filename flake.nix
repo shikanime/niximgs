@@ -47,6 +47,7 @@
               imports = [
                 devlib.devenvModules.shikanime-studio
               ];
+              cachix.push = "shikanime";
               packages = [
                 pkgs.buildah
                 pkgs.gh
