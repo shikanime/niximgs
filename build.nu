@@ -46,7 +46,7 @@ def get_platforms []: nothing -> string {
     if ($env.PLATFORMS? | default "" | is-empty) {
         let detected: string = detect_host_platform
         print $"No PLATFORMS specified, detected host platform: ($detected)"
-        $detected
+        [$detected]
     } else {
         $env.PLATFORMS | split row ","
     }
