@@ -42,11 +42,11 @@ def format_nix_flake [ctx: record, image: string, platform: record]: nothing -> 
     $"($ctx.build_context)#packages.($formatted_arch)-($platform.os).($image)"
 }
 
-def get_platforms []: nothing -> string {
+def get_platforms []: nothing -> list<string> {
     if ($env.PLATFORMS? | default "" | is-empty) {
         let detected: string = detect_host_platform
         print $"No PLATFORMS specified, detected host platform: ($detected)"
-        $detected
+        [$detected]
     } else {
         $env.PLATFORMS | split row ","
     }
