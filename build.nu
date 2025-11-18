@@ -20,10 +20,6 @@ def parse_platform []: string -> record {
     {os: ($parts | get 0), arch: ($parts | get 1)}
 }
 
-def parse_image []: string -> string {
-    $in | split row "/" | last | split row ":" | get 0
-}
-
 def format_arch []: string -> string {
     match $in {
         "amd64" => "x86_64"
@@ -38,8 +34,9 @@ def format_platform_image [ctx: record, platform: record]: nothing -> string {
 }
 
 def format_nix_flake [ctx: record, image: string, platform: record]: nothing -> string {
+    let formatted_image_name = $image | split row "/" | last | split row ":" | get 0
     let formatted_arch = $platform.arch | format_arch
-    $"($ctx.build_context)#packages.($formatted_arch)-($platform.os).($image)"
+    $"($ctx.build_context)#packages.($formatted_arch)-($platform.os).($formatted_image_name)"
 }
 
 def get_platforms []: nothing -> list<string> {
@@ -65,7 +62,7 @@ def get_skaffold_context []: nothing -> record {
         platforms: $platforms,
         push_image: $push_image
     }
-    print $"Building configuration: image '($ctx.image)' for platforms ($ctx.platforms) from context '($ctx.build_context)' with push enabled: ($ctx.push_image)"
+    print $"Building image '($ctx.image)' for platforms ($ctx.platforms) from context '($ctx.build_context)' with push enabled: ($ctx.push_image)"
     $ctx
 }
 
@@ -103,27 +100,30 @@ def build_flake []: string -> string {
     nix build --accept-flake-config --print-out-paths $in | str trim
 }
 
-def build_image [ctx: record, platform: record]: string -> string {
+def build_image [ctx: record, platform: record]: string -> nothing {
     print $"Building ($in) for ($platform.os)/($platform.arch)..."
     let flake_url = format_nix_flake $ctx $in $platform
-    $flake_url | build_flake | run-external $in | load_image
+    let loaded_image = $flake_url | build_flake | run-external $in | load_image
+    docker tag $loaded_image $ctx.image
+    docker rmi $loaded_image
 }
 
 def build_platform_image [ctx: record]: string -> record {
     let platform = $in | parse_platform
-    let image = $ctx.image | parse_image
 
-    let path = $image | build_image $ctx $platform
+    $ctx.image | build_image $ctx $platform
     let formatted_image = format_platform_image $ctx $platform
 
-    docker tag $path $formatted_image
+    docker tag $ctx.image $formatted_image
+    docker rmi $ctx.image
 
     {name: $formatted_image, platform: $platform}
 }
 
-def push_image [ctx: record]: record -> nothing {
+def push_image [ctx: record]: string -> nothing {
     if $ctx.push_image {
-        docker push $in.name
+        print $"Pushing ($in)..."
+        docker push $in
     }
 }
 
@@ -151,16 +151,15 @@ def push_manifest [ctx: record]: nothing -> nothing {
 
 def build_and_push_multiplatform_image [ctx: record]: nothing -> nothing {
     let images = $ctx.platforms | par-each { |platform| $platform | build_platform_image $ctx }
-    $images | par-each { |image| $image | push_image $ctx }
+    $images | par-each { |image| $image.name | push_image $ctx }
     create_manifest $ctx $images
     push_manifest $ctx
 }
 
 def build_and_push_image [ctx: record]: nothing -> nothing {
     let platform = $ctx.platforms | first | parse_platform
-    let image = $ctx.image | parse_image
-    let loaded_image = $image | build_image $ctx $platform
-    {name: $ctx.image, path: $loaded_image} | push_image $ctx
+    $ctx.image | build_image $ctx $platform
+    $ctx.image | push_image $ctx
 }
 
 def build [ctx: record]: nothing -> nothing {
