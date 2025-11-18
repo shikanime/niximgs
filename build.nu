@@ -89,9 +89,9 @@ def build_platform_image [ctx: record]: string -> record {
     {name: $formatted_image, platform: $platform, path: $path}
 }
 
-def push_image [ctx: record]: record -> nothing {
+def push_image [ctx: record, image: record]: record -> nothing {
     if $ctx.push_image {
-        skopeo copy $"docker-archive:($in.path)" $"docker://($in.name)"
+        run-external $image.path | skopeo copy $"docker-archive:/dev/stdin" $"docker://($image.name)"
     }
 }
 
@@ -122,7 +122,7 @@ def push_manifest [ctx: record]: nothing -> nothing {
 
 def build_and_push_multiplatform_image [ctx: record]: nothing -> nothing {
     let images = $ctx.platforms | par-each { |platform| $platform | build_platform_image $ctx }
-    $images | par-each { |image| $image | push_image $ctx }
+    $images | par-each { |image| push_image $ctx $image }
     create_manifest $ctx $images
     push_manifest $ctx
 }
