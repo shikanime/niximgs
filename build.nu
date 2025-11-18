@@ -106,14 +106,14 @@ def build_flake []: string -> string {
 def build_image [ctx: record, platform: record]: string -> string {
     print $"Building ($in) for ($platform.os)/($platform.arch)..."
     let flake_url = format_nix_flake $ctx $in $platform
-    $flake_url | build_flake
+    $flake_url | build_flake | run-external $in | load_image
 }
 
 def build_platform_image [ctx: record]: string -> record {
     let platform = $in | parse_platform
     let image = $ctx.image | parse_image
 
-    let path = $image | build_image $ctx $platform | run-external $in | load_image
+    let path = $image | build_image $ctx $platform
     let formatted_image = format_platform_image $ctx $platform
 
     docker tag $path $formatted_image
