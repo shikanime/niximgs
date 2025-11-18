@@ -1,5 +1,5 @@
 #!/usr/bin/env nix
-#! nix shell nixpkgs#docker nixpkgs#nushell nixpkgs#skopeo --command nu
+#! nix shell nixpkgs#docker nixpkgs#nushell --command nu
 
 def detect_host_arch []: nothing -> string {
     let arch: string = uname | get machine
