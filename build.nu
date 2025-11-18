@@ -145,6 +145,7 @@ def create_manifest [ctx: record, images: list<record>]: nothing -> nothing {
 def push_manifest [ctx: record]: nothing -> nothing {
     if $ctx.push_image {
         docker manifest push $ctx.image
+        docker pull $ctx.image
     }
 }
 
