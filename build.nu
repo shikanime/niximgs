@@ -69,36 +69,6 @@ def get_skaffold_context []: nothing -> record {
     $ctx
 }
 
-def load_docker_image []: string -> string {
-    let docker_load_result: string = docker load -i $in | str trim
-
-    # Try to parse "Loaded image:" format first
-    let loaded_images = $docker_load_result | parse "Loaded image: {image}"
-
-    let image: string = if ($loaded_images | length) > 0 {
-        $loaded_images | get image.0
-    } else {
-        # If that fails, try to parse the "already exists" format with more flexible regex
-        let existing_images = $docker_load_result | parse "The image {image} already exists"
-
-        if ($existing_images | length) > 0 {
-            $existing_images | get image.0
-        } else {
-            # Try to extract image name from the beginning of "already exists" messages
-            let image_pattern = $docker_load_result | parse --regex 'The image (?P<image>\S+:\S+) already exists'
-
-            if ($image_pattern | length) > 0 {
-                $image_pattern | get image.0
-            } else {
-                print $"Error: Could not parse loaded image from Docker output: ($docker_load_result)"
-                exit 1
-            }
-        }
-    }
-
-    $image
-}
-
 def build_flake []: string -> string {
     nix build --accept-flake-config --print-out-paths $in | str trim
 }
