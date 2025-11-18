@@ -1,9 +1,7 @@
 {
   inputs = {
     devenv.url = "github:cachix/devenv";
-    devlib.url = "github:shikanime-studio/devlib";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    git-hooks.url = "github:cachix/git-hooks.nix";
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
   };
@@ -13,41 +11,61 @@
       "https://cachix.cachix.org"
       "https://devenv.cachix.org"
       "https://shikanime.cachix.org"
-      "https://shikanime-studio.cachix.org"
     ];
     extra-trusted-public-keys = [
       "cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM="
       "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
       "shikanime.cachix.org-1:OrpjVTH6RzYf2R97IqcTWdLRejF6+XbpFNNZJxKG8Ts="
-      "shikanime-studio.cachix.org-1:KxV6aDFU81wzoR9u6pF1uq0dQbUuKbodOSP8/EJHXO0="
     ];
   };
 
   outputs =
     inputs@{
       devenv,
-      devlib,
       flake-parts,
-      git-hooks,
       treefmt-nix,
       ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         devenv.flakeModule
-        devlib.flakeModule
-        git-hooks.flakeModule
         treefmt-nix.flakeModule
       ];
       perSystem =
         { self', pkgs, ... }:
         {
+          treefmt = {
+            projectRootFile = "flake.nix";
+            enableDefaultExcludes = true;
+            programs = {
+              hclfmt.enable = true;
+              nixfmt.enable = true;
+              prettier.enable = true;
+              shfmt.enable = true;
+              statix.enable = true;
+              terraform.enable = true;
+            };
+            settings.global.excludes = [
+              "*.excalidraw"
+              "*.terraform.lock.hcl"
+              ".gitattributes"
+              "LICENSE"
+            ];
+          };
           devenv.shells = {
             default = {
-              imports = [
-                devlib.devenvModules.shikanime-studio
-              ];
-              cachix.push = "shikanime";
+              containers = pkgs.lib.mkForce { };
+              languages.nix.enable = true;
+              cachix = {
+                enable = true;
+                push = "shikanime";
+              };
+              git-hooks.hooks = {
+                actionlint.enable = true;
+                deadnix.enable = true;
+                flake-checker.enable = true;
+                shellcheck.enable = true;
+              };
               packages = [
                 pkgs.gh
                 pkgs.nushell
