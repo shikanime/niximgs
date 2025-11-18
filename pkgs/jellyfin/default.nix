@@ -1,6 +1,6 @@
 { base, pkgs }:
 
-pkgs.dockerTools.streamLayeredImage {
+pkgs.dockerTools.buildLayeredImage {
   name = "jellyfin";
   tag = pkgs.jellyfin.version;
   fromImage = base;

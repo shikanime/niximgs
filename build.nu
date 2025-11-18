@@ -69,28 +69,28 @@ def get_skaffold_context []: nothing -> record {
     $ctx
 }
 
-def load_image []: binary -> string {
-    let load_result: string = $in | docker load | str trim
+def load_docker_image []: string -> string {
+    let docker_load_result: string = docker load -i $in | str trim
 
     # Try to parse "Loaded image:" format first
-    let loaded_images = $load_result | parse "Loaded image: {image}"
+    let loaded_images = $docker_load_result | parse "Loaded image: {image}"
 
     let image: string = if ($loaded_images | length) > 0 {
         $loaded_images | get image.0
     } else {
         # If that fails, try to parse the "already exists" format with more flexible regex
-        let existing_images = $load_result | parse "The image {image} already exists"
+        let existing_images = $docker_load_result | parse "The image {image} already exists"
 
         if ($existing_images | length) > 0 {
             $existing_images | get image.0
         } else {
             # Try to extract image name from the beginning of "already exists" messages
-            let image_pattern = $load_result | parse --regex 'The image (?P<image>\S+:\S+) already exists'
+            let image_pattern = $docker_load_result | parse --regex 'The image (?P<image>\S+:\S+) already exists'
 
             if ($image_pattern | length) > 0 {
                 $image_pattern | get image.0
             } else {
-                print $"Error: Could not parse loaded image from Docker output: ($load_result)"
+                print $"Error: Could not parse loaded image from Docker output: ($docker_load_result)"
                 exit 1
             }
         }
@@ -106,7 +106,7 @@ def build_flake []: string -> string {
 def build_image [ctx: record, platform: record]: string -> string {
     print $"Building ($in) for ($platform.os)/($platform.arch)..."
     let flake_url = format_nix_flake $ctx $in $platform
-    $flake_url | build_flake | run-external $in | load_image
+    $flake_url | build_flake
 }
 
 def build_platform_image [ctx: record]: string -> record {
@@ -116,19 +116,21 @@ def build_platform_image [ctx: record]: string -> record {
     let path = $image | build_image $ctx $platform
     let formatted_image = format_platform_image $ctx $platform
 
-    docker tag $path $formatted_image
-
-    {name: $formatted_image, platform: $platform}
+    {name: $formatted_image, platform: $platform, path: $path}
 }
 
 def push_image [ctx: record]: record -> nothing {
     if $ctx.push_image {
-        docker push $in.name
+        skopeo copy $"docker-archive:($in.path)" $"docker://($in.name)"
     }
 }
 
 def remove_manifest [ctx: record]: nothing -> nothing {
-    docker manifest rm $ctx.image | ignore
+    try {
+        docker manifest rm $ctx.image
+    } catch { |err|
+        print $"Manifest removal failed for ($ctx.image): ($err.msg)"
+    }
 }
 
 def annotate_manifest [ctx: record, image: record]: nothing -> nothing {
@@ -145,7 +147,6 @@ def create_manifest [ctx: record, images: list<record>]: nothing -> nothing {
 def push_manifest [ctx: record]: nothing -> nothing {
     if $ctx.push_image {
         docker manifest push $ctx.image
-        docker pull $ctx.image
     }
 }
 
