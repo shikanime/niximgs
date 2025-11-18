@@ -4,9 +4,6 @@ metadata:
   name: niximgs
 build:
   artifacts:
-    - image: ghcr.io/shikanime/niximgs/base
-      custom:
-        buildCommand: ./build.nu
     - image: ghcr.io/shikanime/niximgs/jellyfin
       custom:
         buildCommand: ./build.nu
